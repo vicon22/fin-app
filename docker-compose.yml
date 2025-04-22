@@ -14,16 +14,16 @@ services:
       start_period: 10s
       timeout: 5s
 
-  # web:
-  #   build: ./web
-  #   env_file:
-  #     - .env
-  #   depends_on:
-  #     db:
-  #       condition: service_healthy
-  #       restart: true
-  #   ports:
-  #     - "8080:8080"
+  web:
+    build: ./web
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+    ports:
+      - "8080:8080"
 
 volumes:
   dbdata:
