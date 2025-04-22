@@ -1,0 +1,8 @@
+target/
+.idea/
+.dbdata
+
+# The following files are generated/updated by Hilla
+node_modules/
+src/main/frontend/generated/
+vite.generated.ts

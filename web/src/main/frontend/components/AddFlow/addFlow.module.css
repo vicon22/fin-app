@@ -1,0 +1,21 @@
+.layout {
+    min-width: 350px;
+    align-items: stretch;
+}
+
+.integer {
+    max-width: 7.5em;
+}
+
+.fraction {
+    max-width: 3.5em;
+}
+
+.separator {
+    font-weight: bold;
+    padding: 0 .25em;
+}
+
+.amount {
+    align-items: baseline;
+}
