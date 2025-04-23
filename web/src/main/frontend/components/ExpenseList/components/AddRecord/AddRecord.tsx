@@ -1,8 +1,8 @@
 import AddFlow from 'Frontend/components/AddFlow/AddFlow';
 import ExpenseCategory from 'Frontend/generated/io/scrooge/data/category/ExpenseCategory';
 import ExpenseFlow from 'Frontend/generated/io/scrooge/data/flow/ExpenseFlow';
-import { categoriesToOptions } from '../../utils';
-import { ExpenseEndpoint } from 'Frontend/generated/endpoints';
+import {categoriesToOptions} from '../../utils';
+import {ExpenseEndpoint} from 'Frontend/generated/endpoints';
 
 type AddRecordProps = {
     projectId: string | undefined;
@@ -14,7 +14,7 @@ type AddRecordProps = {
 export function AddRecord(props: AddRecordProps) {
     return (
         <AddFlow<ExpenseFlow, ExpenseCategory>
-            title='New expense'
+            title='Новая транзакция'
             projectId={props.projectId}
             categories={categoriesToOptions(props.categories)}
             create={ExpenseEndpoint.create}

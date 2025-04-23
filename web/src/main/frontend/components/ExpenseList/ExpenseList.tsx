@@ -1,10 +1,13 @@
-import { VerticalLayout, VirtualList } from '@vaadin/react-components';
+import {VerticalLayout} from '@vaadin/react-components';
+import {AutoGrid} from '@vaadin/hilla-react-crud';
 import ExpenseFlow from 'Frontend/generated/io/scrooge/data/flow/ExpenseFlow';
+import ExpenseFlowModel from 'Frontend/generated/io/scrooge/data/flow/ExpenseFlowModel';
 import IncomeFlow from 'Frontend/generated/io/scrooge/data/flow/IncomeFlow';
 import Project from 'Frontend/generated/io/scrooge/data/project/Project';
-import { formatAmount } from 'Frontend/util/currency';
+import {formatAmount} from 'Frontend/util/currency';
 import ExpenseCategory from 'Frontend/generated/io/scrooge/data/category/ExpenseCategory';
-import { AddRecord } from './components/AddRecord/AddRecord';
+import {ExpenseService} from 'Frontend/generated/endpoints';
+import {AddRecord} from './components/AddRecord/AddRecord';
 import st from './expenseList.module.css';
 
 type ExpenseListProps = {
@@ -52,15 +55,19 @@ export function ExpenseList(props: ExpenseListProps) {
         props.items.length
             ? (
                 <VerticalLayout theme='spacing'>
-                    {renderAddControl('Add expense record')}
-                    <VirtualList items={props.items}>{renderItem}</VirtualList>
+                    {renderAddControl('Добавить расход')}
+                    <AutoGrid
+                        service={ExpenseService}
+                        model={ExpenseFlowModel}
+                        visibleColumns={['amount', 'title', 'created']}
+                    />
                 </VerticalLayout>
             )
             : (
                 <div className={st.placeholder}>
-                    <h2>No records yet</h2>
-                    <p>Fulfill project with income or expenses records</p>
-                    {renderAddControl('Add first expense')}
+                    <h2>Расходов пока нет</h2>
+                    <p>Создате первую запись о расходах</p>
+                    {renderAddControl('Создать запись')}
                 </div>
             )
     )

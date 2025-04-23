@@ -5,7 +5,7 @@ import st from './project.module.css';
 
 export const config: ViewConfig = {
   menu: { order: 5, icon: 'line-awesome/svg/book-solid.svg' },
-  title: 'Projects',
+  title: 'Проекты',
   loginRequired: true,
 };
 

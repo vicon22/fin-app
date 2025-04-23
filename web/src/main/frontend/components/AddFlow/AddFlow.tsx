@@ -1,7 +1,60 @@
-import { useCallback, useEffect } from 'react';
-import { useSignal } from '@vaadin/hilla-react-signals';
-import { Button, ComboBox, Dialog, HorizontalLayout, Icon, NumberField, SelectItem, TextField, VerticalLayout } from '@vaadin/react-components';
-import st from './addFlow.module.css'
+import {useCallback, useEffect} from 'react';
+import {useSignal} from '@vaadin/hilla-react-signals';
+import {
+    Button,
+    ComboBox,
+    Dialog,
+    HorizontalLayout,
+    Icon,
+    NumberField,
+    SelectItem,
+    TextField,
+    VerticalLayout,
+    RadioButton,
+    RadioGroup,
+    DatePicker,
+    Select,
+    TextArea
+} from '@vaadin/react-components';
+import st from './addFlow.module.css';
+
+const banks = [
+    {
+        label: 'OZON Банк',
+        value: 'ozon',
+    },
+    {
+        label: 'Сбер',
+        value: 'sber',
+    },
+    {
+        label: 'Т-Банк',
+        value: 't-bank',
+    },
+    {
+        label: 'Точка',
+        value: 'tochka',
+    },
+    {
+        label: 'ВТБ',
+        value: 'vtb',
+    },
+    {
+        label: 'Альфа банк',
+        value: 'alpha',
+    },
+    {
+        label: 'Уралсиб',
+        value: 'uralsib',
+    },
+    {
+        label: 'Банк Зенит',
+        value: 'яутше',
+    },
+  ];
+
+
+
 
 type AddFlowProps<T, C> = {
     title: string;
@@ -65,73 +118,117 @@ export default function AddFlow<T, C>(props: AddFlowProps<T, C>) {
                 footerRenderer={() => (
                     <>
                         <Button onClick={close}>
-                            Cancel
+                            Отмена
                         </Button>
                         <Button
                             theme='primary'
                             onClick={submit}
                         >
-                            Add
+                            Добавить
                         </Button>
                     </>
                 )}
-                >
+            >
                 <VerticalLayout className={st.layout}>
-                    <TextField
-                        required
-                        label='Title'
-                        errorMessage='Title required'
-                        value={label.value}
-                        onChange={e => label.value = e.target.value.trim()}
-                    />
-
-                    <ComboBox
-                        required
-                        label='Category'
-                        errorMessage='Category required'
-                        items={props.categories}
-                        value={categoryId.value}
-                        onChange={e => categoryId.value = e.target.value}
-                    />
-
-                    <HorizontalLayout className={st.amount}>
-                        <NumberField
+                    <HorizontalLayout theme="spacing" style={{ justifyContent: 'space-between' }}>
+                        <TextField
+                            style={{ flexGrow: 1 }}
                             required
-                            label='Amount'
-                            theme='align-right'
-                            className={st.integer}
-                            placeholder='0'
-                            min={0}
-                            value={String(integer.value)}
-                            onChange={e => {
-                                const value = parseInt(e.target.value);
-
-                                if (value < 0) {
-                                    integer.value = 0;
-                                } else {
-                                    integer.value = value;
-                                }
-                            }}
+                            label='Название'
+                            value={label.value}
+                            onChange={e => label.value = e.target.value.trim()}
                         />
-                        <div className={st.separator}>.</div>
-                        <NumberField
-                            theme='align-right'
-                            className={st.fraction}
-                            placeholder='00'
-                            value={String(fraction.value)}
-                            onChange={e => {
-                                const value = parseInt(e.target.value);
+                        <DatePicker label="Дата операции" />
+                    </HorizontalLayout>
 
-                                if (value < 0) {
-                                    fraction.value = 0;
-                                } else if (value > 99) {
-                                    fraction.value = 99;
-                                } else {
-                                    fraction.value = value;
-                                }
-                            }}
+                    <HorizontalLayout theme="spacing" style={{ justifyContent: 'space-between' }}>
+                        <ComboBox
+                            required
+                            style={{ flexGrow: 1 }}
+                            label='Категория'
+                            items={props.categories}
+                            value={categoryId.value}
+                            onChange={e => categoryId.value = e.target.value}
+                        />
+
+                        <HorizontalLayout className={st.amount}>
+                            <NumberField
+                                required
+                                label='Сумма'
+                                theme='align-right'
+                                className={st.integer}
+                                placeholder='0'
+                                min={0}
+                                value={String(integer.value)}
+                                onChange={e => {
+                                    const value = parseInt(e.target.value);
+
+                                    if (value < 0) {
+                                        integer.value = 0;
+                                    } else {
+                                        integer.value = value;
+                                    }
+                                }}
+                            />
+                            <div className={st.separator}>.</div>
+                            <NumberField
+                                theme='align-right'
+                                className={st.fraction}
+                                placeholder='00'
+                                value={String(fraction.value)}
+                                onChange={e => {
+                                    const value = parseInt(e.target.value);
+
+                                    if (value < 0) {
+                                        fraction.value = 0;
+                                    } else if (value > 99) {
+                                        fraction.value = 99;
+                                    } else {
+                                        fraction.value = value;
+                                    }
+                                }}
+                            />
+                        </HorizontalLayout>
+                    </HorizontalLayout>
+
+                    <hr/>
+                    <h5 className={st.subtitle}>Отправитель</h5>
+
+                    <HorizontalLayout theme="spacing" style={{ justifyContent: 'space-between' }}>
+                        <Select style={{ flexGrow: 1 }} label="Банк" items={banks} value={banks[0].value} />
+                        <NumberField style={{ flexGrow: 1 }} required label='Счет' />
+                    </HorizontalLayout>
+
+                    <hr/>
+                    <h5 className={st.subtitle}>Получатель</h5>
+
+                    <RadioGroup label="Тип лица">
+                        <RadioButton value="legal" label="Юридическое" />
+                        <RadioButton value="private" label="Физическое" />
+                    </RadioGroup>
+
+                    <HorizontalLayout theme="spacing" style={{ justifyContent: 'space-between' }}>
+                        <Select style={{ flexGrow: 1 }} label="Банк" items={banks} value={banks[0].value} />
+                        <NumberField style={{ flexGrow: 1 }} required label='Счет' />
+                    </HorizontalLayout>
+
+                    <HorizontalLayout theme="spacing" style={{ justifyContent: 'space-between' }}>
+                        <NumberField
+                        style={{ flexGrow: 1 }}
+                            required
+                            label='ИНН'
+                        />
+
+                        <NumberField
+                        style={{ flexGrow: 1 }}
+                            required
+                            label='Телефон'
                         />
                     </HorizontalLayout>
+
+                    <hr/>
+
+                    <TextArea label='Комментарии' minRows={3} maxRows={5} />
                 </VerticalLayout>
             </Dialog>
 

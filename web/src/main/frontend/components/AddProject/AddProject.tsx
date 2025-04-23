@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useMemo } from 'react';
-import { useSignal } from '@vaadin/hilla-react-signals';
-import { Button, Dialog, Icon, Select, TextField, VerticalLayout } from '@vaadin/react-components';
-import { CurrencyEndpoint, ProjectEndpoint } from 'Frontend/generated/endpoints';
+import {useCallback, useEffect, useMemo} from 'react';
+import {useSignal } from '@vaadin/hilla-react-signals';
+import {Button, Dialog, Icon, Select, TextField, VerticalLayout} from '@vaadin/react-components';
+import {CurrencyEndpoint, ProjectEndpoint} from 'Frontend/generated/endpoints';
 import Currency from 'Frontend/generated/io/scrooge/data/currency/Currency';
 import Project from 'Frontend/generated/io/scrooge/data/project/Project';
-import { useAuth } from 'Frontend/util/auth';
+import {useAuth} from 'Frontend/util/auth';
 import st from './addProject.module.css';
 
 type AddProjectProps = {
@@ -59,7 +59,7 @@ export default function AddProject(props: AddProjectProps) {
     return (
         <>
             <Dialog
-                headerTitle='New project'
+                headerTitle='Новый проект'
                 opened={dialogOpened.value}
                 onOpenedChanged={({ detail }) => {
                     dialogOpened.value = detail.value;
@@ -69,13 +69,13 @@ export default function AddProject(props: AddProjectProps) {
                         <Button
                             onClick={close}
                         >
-                            Cancel
+                            Отмена
                         </Button>
                         <Button
                             theme='primary'
                             onClick={create}
                         >
-                            Add
+                            Создать
                         </Button>
                     </>
                 )}
@@ -84,13 +84,13 @@ export default function AddProject(props: AddProjectProps) {
                     <TextField
                         required
                         value={name.value}
-                        label='Name'
+                        label='Название'
                         onChange={e => {
                             name.value = e.target.value
                         }}
                     />
                     <Select
-                        label='Currency'
+                        label='Валюта'
                         items={options}
                         value={currencyId.value}
                         onChange={e => {

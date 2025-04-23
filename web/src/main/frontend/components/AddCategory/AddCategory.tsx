@@ -1,6 +1,6 @@
-import { useCallback } from 'react';
-import { useSignal } from '@vaadin/hilla-react-signals';
-import { Button, Dialog, Icon, TextField, VerticalLayout } from '@vaadin/react-components';
+import {useCallback} from 'react';
+import {useSignal} from '@vaadin/hilla-react-signals';
+import {Button, Dialog, Icon, TextField, VerticalLayout} from '@vaadin/react-components';
 import ExpenseCategory from 'Frontend/generated/io/scrooge/data/category/ExpenseCategory';
 import IncomeCategory from 'Frontend/generated/io/scrooge/data/category/IncomeCategory';
 import st from './addCategory.module.css'
@@ -65,14 +65,14 @@ export default function AddCategory(props: AddCategoryProps) {
                 <VerticalLayout className={st.layout}>
                     <TextField
                         required
-                        label='Title'
+                        label='Название'
                         value={label.value}
                         onChange={e => label.value = e.target.value.trim()}
                     />
 
                     <TextField
                         required
-                        label='Description'
+                        label='Описание'
                         value={desc.value}
                         onChange={e => desc.value = e.target.value.trim()}
                     />

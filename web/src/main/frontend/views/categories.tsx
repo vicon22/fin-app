@@ -6,7 +6,7 @@ import { ExpenseCategoryEndpoint, IncomeCategoryEndpoint } from 'Frontend/genera
 
 export const config: ViewConfig = {
   menu: { order: 3, icon: 'line-awesome/svg/list-solid.svg' },
-  title: 'Categories',
+  title: 'Категории',
   loginRequired: true,
 };
 
@@ -15,18 +15,18 @@ export default function CategoriesView() {
         <CategoriesController>
             {({data, refetch}) => (
                 <TabSheet>
-                    <TabSheetTab label='Incomes'>
+                    <TabSheetTab label='Доходы'>
                         <CategoryList
-                            title='Add income category'
+                            title='Добавить категорию доходов'
                             create={IncomeCategoryEndpoint.create}
                             items={data.categories.income}
                             onCreate={refetch}
                         />
                     </TabSheetTab>
 
-                    <TabSheetTab label='Expenses'>
+                    <TabSheetTab label='Расходы'>
                         <CategoryList
-                            title='Add expense category'
+                            title='Добавить категорию расходов'
                             create={ExpenseCategoryEndpoint.create}
                             items={data.categories.expense}
                             onCreate={refetch}

@@ -8,6 +8,7 @@ import st from './project.module.css';
 
 export const config: ViewConfig = {
   loginRequired: true,
+  title: 'Проект',
 };
 
 export default function ProjectView() {
@@ -26,8 +27,8 @@ export default function ProjectView() {
                 if (error) {
                     return (
                         <div className={st.placeholder}>
-                            <h2>Something went wrong :(</h2>
-                            <p>Check project id or try to reload page</p>
+                            <h2>Что-то пошло не так :(</h2>
+                            <p>Проверьте id проекта и перезагрузите страницу</p>
                         </div>
                     )
                 }
@@ -45,7 +46,7 @@ export default function ProjectView() {
                         </HorizontalLayout>
 
                         <TabSheet>
-                            <TabSheetTab label='Expenses'>
+                            <TabSheetTab label='Расходы'>
                                 <ExpenseList
                                     items={data.flows.expenses}
                                     categories={data.categories.expense}
@@ -54,7 +55,7 @@ export default function ProjectView() {
                                 />
                             </TabSheetTab>
 
-                            <TabSheetTab label='Incomes'>
+                            <TabSheetTab label='Доходы'>
                                 <IncomeList
                                     items={data.flows.incomes}
                                     categories={data.categories.income}

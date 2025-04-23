@@ -7,7 +7,7 @@ import st from './Index.module.css';
 
 export const config: ViewConfig = {
   menu: { order: 0, icon: 'line-awesome/svg/tachometer-alt-solid.svg' },
-  title: 'Dashboard',
+  title: 'Обзор',
   loginRequired: true,
 };
 
@@ -18,7 +18,7 @@ export default function DashboardView() {
                 return (
                     <HorizontalLayout theme='spacing margin'>
                         <div className={st.slot}>
-                            <h2>Projects</h2>
+                            <h2>Баланс по проектам</h2>
 
                             <VerticalLayout theme='spacing-s'>
                                 {data.projects.map(item => {
@@ -40,7 +40,7 @@ export default function DashboardView() {
                         </div>
 
                         <div className={st.slot}>
-                            <h2>Expenses</h2>
+                            <h2>Расходы по категориям</h2>
 
                             <VerticalLayout theme='spacing-s'>
                                 {Object.entries(data.expenseGroups).map(([key, value]) => {

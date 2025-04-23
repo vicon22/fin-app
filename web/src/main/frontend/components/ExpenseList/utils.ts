@@ -1,4 +1,4 @@
-import { UnionCategory } from './types';
+import {UnionCategory} from './types';
 
 export function categoriesToOptions(categories: UnionCategory[]) {
     return (categories || []).map(item => ({

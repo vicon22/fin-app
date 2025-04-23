@@ -1,9 +1,12 @@
-import { VerticalLayout, VirtualList } from '@vaadin/react-components';
+import {VerticalLayout} from '@vaadin/react-components';
+import {AutoGrid} from '@vaadin/hilla-react-crud';
 import ExpenseFlow from 'Frontend/generated/io/scrooge/data/flow/ExpenseFlow';
 import IncomeFlow from 'Frontend/generated/io/scrooge/data/flow/IncomeFlow';
+import IncomeFlowModel from 'Frontend/generated/io/scrooge/data/flow/IncomeFlowModel';
+import {IncomeService} from 'Frontend/generated/endpoints';
 import Project from 'Frontend/generated/io/scrooge/data/project/Project';
-import { formatAmount } from 'Frontend/util/currency';
-import { AddRecord } from './components/AddRecord/AddRecord';
+import {formatAmount} from 'Frontend/util/currency';
+import {AddRecord} from './components/AddRecord/AddRecord';
 import IncomeCategory from 'Frontend/generated/io/scrooge/data/category/IncomeCategory';
 import st from './incomeList.module.css';
 
@@ -46,15 +49,19 @@ export function IncomeList(props: IncomeListProps) {
         props.items.length
             ? (
                 <VerticalLayout theme='spacing'>
-                    {renderAddControl('Add income record')}
-                    <VirtualList items={props.items}>{renderItem}</VirtualList>
+                    {renderAddControl('Добавить доход')}
+                    <AutoGrid
+                        service={IncomeService}
+                        model={IncomeFlowModel}
+                        visibleColumns={['amount', 'title', 'created']}
+                    />
                 </VerticalLayout>
             )
             : (
                 <div className={st.placeholder}>
-                    <h2>No records yet</h2>
-                    <p>Fulfill project with income or expenses records</p>
-                    {renderAddControl('Add first income')}
+                    <h2>Доходов пока нет</h2>
+                    <p>Создате первую запись о доходах</p>
+                    {renderAddControl('Создать запись')}
                 </div>
             )
     )

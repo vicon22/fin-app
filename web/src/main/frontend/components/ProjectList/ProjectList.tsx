@@ -1,9 +1,9 @@
-import { Button, Icon, VerticalLayout, VirtualList } from '@vaadin/react-components';
+import {Button, Icon, VerticalLayout, VirtualList} from '@vaadin/react-components';
 import Project from 'Frontend/generated/io/scrooge/data/project/Project';
 import AddProject from '../AddProject/AddProject';
-import { NavLink } from 'react-router-dom';
-import { ProjectEndpoint } from 'Frontend/generated/endpoints';
-import { useAuth } from 'Frontend/util/auth';
+import {NavLink} from 'react-router-dom';
+import {ProjectEndpoint} from 'Frontend/generated/endpoints';
+import {useAuth } from 'Frontend/util/auth';
 import st from './projectList.module.css'
 
 type ProjectListProps = {
@@ -34,16 +34,16 @@ export function ProjectList(props: ProjectListProps) {
         props.items.length
             ? (
                 <VerticalLayout theme='spacing'>
-                    <AddProject buttonText='Add project' onCreate={props.onCreate}/>
+                    <AddProject buttonText='Создать новый проект' onCreate={props.onCreate}/>
                     <VirtualList items={props.items}>{renderItem}</VirtualList>
                 </VerticalLayout>
             )
             : (
                 <div className={st.placeholder}>
-                    <h2>No projects yet</h2>
-                    <p>Add projects to control flows</p>
+                    <h2>Проектов пока нет</h2>
+                    <p>Создайте первый проект для ведения учета расходов и доходов</p>
 
-                    <AddProject buttonText='Create first project' onCreate={props.onCreate}/>
+                    <AddProject buttonText='Создать проект' onCreate={props.onCreate}/>
                 </div>
             )
     )

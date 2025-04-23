@@ -1,4 +1,4 @@
-import { VerticalLayout, VirtualList } from '@vaadin/react-components';
+import {VerticalLayout, VirtualList} from '@vaadin/react-components';
 import ExpenseCategory from 'Frontend/generated/io/scrooge/data/category/ExpenseCategory';
 import IncomeCategory from 'Frontend/generated/io/scrooge/data/category/IncomeCategory';
 import AddCategory from '../AddCategory/AddCategory';
@@ -31,7 +31,7 @@ export function CategoryList(props: CategoryListProps) {
                     <AddCategory
                         title={props.title}
                         create={props.create}
-                        buttonText='Add category'
+                        buttonText='Новая категория'
                         onCreate={props.onCreate}
                     />
 
@@ -40,13 +40,13 @@ export function CategoryList(props: CategoryListProps) {
             )
             : (
                 <div className={st.placeholder}>
-                    <h2>No categories yet</h2>
-                    <p>Add categories to group flows and control expenses</p>
+                    <h2>Категорий еще нет</h2>
+                    <p>Создайте первую категорию для группировки доходов или расходов</p>
 
                     <AddCategory
                         title={props.title}
                         create={props.create}
-                        buttonText='Add category'
+                        buttonText='Создать категорию'
                         onCreate={props.onCreate}
                     />
                 </div>
