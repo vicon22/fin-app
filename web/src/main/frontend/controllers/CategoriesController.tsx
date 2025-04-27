@@ -1,8 +1,8 @@
 import {ReactNode, useCallback, useEffect, useState} from 'react';
-import {useParams} from 'react-router-dom';
 import {ExpenseCategoryEndpoint, IncomeCategoryEndpoint} from 'Frontend/generated/endpoints';
 import ExpenseCategory from 'Frontend/generated/io/scrooge/data/category/ExpenseCategory';
 import IncomeCategory from 'Frontend/generated/io/scrooge/data/category/IncomeCategory';
+import { useParams } from 'react-router';
 
 type CategoriesControllerProps = {
     children: (payload: {

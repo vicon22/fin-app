@@ -3,7 +3,7 @@ import { effect, signal } from '@vaadin/hilla-react-signals';
 import { AppLayout, Avatar, Button, DrawerToggle, Icon, SideNav, SideNavItem } from '@vaadin/react-components';
 import { useAuth } from 'Frontend/util/auth.js';
 import { Suspense, useEffect } from 'react';
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router';
 
 const documentTitleSignal = signal('');
 effect(() => {

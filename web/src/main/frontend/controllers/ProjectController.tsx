@@ -1,5 +1,5 @@
 import {ReactNode, useCallback, useEffect, useState} from 'react';
-import {useParams} from 'react-router-dom';
+import { useParams } from 'react-router';
 import {ExpenseCategoryEndpoint, ExpenseEndpoint, IncomeCategoryEndpoint, IncomeEndpoint, ProjectEndpoint} from 'Frontend/generated/endpoints';
 import ExpenseCategory from 'Frontend/generated/io/scrooge/data/category/ExpenseCategory';
 import Project from 'Frontend/generated/io/scrooge/data/project/Project';

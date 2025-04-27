@@ -4,7 +4,7 @@ import ProjectsController from 'Frontend/controllers/ProjectsController';
 import st from './project.module.css';
 
 export const config: ViewConfig = {
-  menu: { order: 5, icon: 'line-awesome/svg/book-solid.svg' },
+  menu: { order: 2, icon: 'line-awesome/svg/book-solid.svg' },
   title: 'Проекты',
   loginRequired: true,
 };

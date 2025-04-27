@@ -1,0 +1,17 @@
+.layout {
+    height: 100%;
+    width: 100%;
+}
+
+.crud {
+    flex-grow: 1;
+    width: 100%;
+}
+
+.search {
+    width: 50%;
+}
+
+.crud :global(.auto-crud-form-header) {
+    display: none;
+}

@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router';
 import { ViewConfig } from '@vaadin/hilla-file-router/types.js';
 import { HorizontalLayout, VerticalLayout } from '@vaadin/react-components';
 import { formatAmount, getCurrencySign } from 'Frontend/util/currency';

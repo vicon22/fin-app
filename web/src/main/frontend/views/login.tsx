@@ -10,7 +10,7 @@ export const config: ViewConfig = {
 
 const loginI18n: LoginI18n = {
   ...new LoginOverlayElement().i18n,
-  header: { title: 'Welcome to Scrooge' },
+  header: { title: 'Scrooge' },
 };
 
 export default function LoginView() {

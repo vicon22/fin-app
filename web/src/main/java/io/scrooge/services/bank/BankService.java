@@ -1,4 +1,4 @@
-package io.scrooge.services.income;
+package io.scrooge.services.bank;
 
 import com.vaadin.flow.component.page.Page;
 import com.vaadin.hilla.BrowserCallable;
@@ -7,6 +7,9 @@ import com.vaadin.hilla.crud.CrudRepositoryService;
 import com.vaadin.hilla.crud.JpaFilterConverter;
 import com.vaadin.hilla.crud.ListService;
 import com.vaadin.hilla.crud.filter.Filter;
+import io.scrooge.data.bank.Bank;
+import io.scrooge.data.bank.BankRepository;
+import io.scrooge.data.category.IncomeCategory;
 import io.scrooge.data.flow.ExpenseFlow;
 import io.scrooge.data.flow.IncomeFlow;
 import io.scrooge.data.flow.IncomeFlowRepository;
@@ -23,21 +26,14 @@ import java.util.UUID;
 @BrowserCallable
 @Service
 @RolesAllowed("USER")
-public class IncomeService extends CrudRepositoryService<IncomeFlow, UUID, IncomeFlowRepository> {
+public class BankService extends CrudRepositoryService<Bank, UUID, BankRepository> {
+    private final BankRepository repository;
 
-    private final IncomeFlowRepository repository;
-
-    public IncomeService(IncomeFlowRepository repository) {
+    public BankService(BankRepository repository) {
         this.repository = repository;
     }
 
-    public List<IncomeFlow> listAllByProject(UUID projectId) {
-        return this.repository.findAllByProjectId(projectId);
+    public List<Bank> getAll() {
+        return this.repository.findAll();
     }
-
-    public int totalByProject(UUID projectId) {
-        return this.repository.totalByProjectId(projectId);
-    }
-
-
 }

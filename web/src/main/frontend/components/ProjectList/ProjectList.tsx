@@ -1,10 +1,10 @@
 import {Button, Icon, VerticalLayout, VirtualList} from '@vaadin/react-components';
 import Project from 'Frontend/generated/io/scrooge/data/project/Project';
 import AddProject from '../AddProject/AddProject';
-import {NavLink} from 'react-router-dom';
 import {ProjectEndpoint} from 'Frontend/generated/endpoints';
 import {useAuth } from 'Frontend/util/auth';
 import st from './projectList.module.css'
+import { NavLink } from 'react-router';
 
 type ProjectListProps = {
     items: Project[];
