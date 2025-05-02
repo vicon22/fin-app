@@ -6,18 +6,21 @@ import IncomeFlow from 'Frontend/generated/io/scrooge/data/flow/IncomeFlow';
 import Project from 'Frontend/generated/io/scrooge/data/project/Project';
 import {formatAmount} from 'Frontend/util/currency';
 import ExpenseCategory from 'Frontend/generated/io/scrooge/data/category/ExpenseCategory';
-import {ExpenseService} from 'Frontend/generated/endpoints';
+import {ExpenseService, TransactionService} from 'Frontend/generated/endpoints';
 import {AddRecord} from './components/AddRecord/AddRecord';
 import st from './expenseList.module.css';
 import { useComputed, useSignal } from '@vaadin/hilla-react-signals';
 import PropertyStringFilter from 'Frontend/generated/com/vaadin/hilla/crud/filter/PropertyStringFilter';
 import Matcher from 'Frontend/generated/com/vaadin/hilla/crud/filter/PropertyStringFilter/Matcher';
 import AndFilter from 'Frontend/generated/com/vaadin/hilla/crud/filter/AndFilter';
+import Transaction from 'Frontend/generated/io/scrooge/data/transaction/Transaction';
+import TransactionModel from 'Frontend/generated/io/scrooge/data/transaction/TransactionModel';
+import TransactionCategory from 'Frontend/generated/io/scrooge/data/category/TransactionCategory';
 
 type ExpenseListProps = {
     project: Project | undefined;
-    items: (ExpenseFlow | IncomeFlow)[];
-    categories: ExpenseCategory[];
+    items: Transaction[];
+    categories: TransactionCategory[];
     onCreate: (item: IncomeFlow) => void;
 };
 
@@ -109,8 +112,8 @@ export function ExpenseList(props: ExpenseListProps) {
                     </HorizontalLayout>
 
                     <AutoGrid
-                        service={ExpenseService}
-                        model={ExpenseFlowModel}
+                        service={TransactionService}
+                        model={TransactionModel}
                         experimentalFilter={filter.value}
                         noHeaderFilters
                         visibleColumns={['title', 'description', 'category_id', 'amount', 'created']}
@@ -120,21 +123,19 @@ export function ExpenseList(props: ExpenseListProps) {
                             },
                             amount: {
                                 header: 'Сумма транзакции',
-                                renderer: ({ item }: { item: ExpenseFlow }) => {
+                                renderer: ({ item }: { item: Transaction }) => {
                                     return formatAmount(item.amount, props.project?.currency)
                                 }
                             },
                             category_id: {
                                 header: 'Категория',
-                                renderer: ({ item }: { item: ExpenseFlow }) => {
-                                    const category = props.categories.find(category => category.id === item.category_id);
-
-                                    return category?.title;
+                                renderer: ({ item }: { item: Transaction }) => {
+                                    return item.category?.title;
                                 }
                             },
                             created: {
                                 header: 'Дата создания',
-                                renderer: ({ item }: { item: ExpenseFlow }) => {
+                                renderer: ({ item }: { item: Transaction }) => {
                                     return (new Date(String(item.created))).toLocaleDateString('ru-RU');
                                 }
                             },

@@ -1,7 +1,5 @@
 import {ViewConfig} from '@vaadin/hilla-file-router/types.js';
 
-
-
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -148,7 +146,7 @@ export default function ProjectView() {
                         <TabSheet>
                             <TabSheetTab label='Расходы'>
                                 <ExpenseList
-                                    items={data.flows.expenses}
+                                    items={data.transactions}
                                     categories={data.categories.expense}
                                     project={data.project}
                                     onCreate={refetch.flows}
@@ -158,7 +156,7 @@ export default function ProjectView() {
                             <TabSheetTab label='Доходы'>
                                 <IncomeList
                                     items={data.flows.incomes}
-                                    categories={data.categories.income}
+                                    categories={data.categories.transactions}
                                     project={data.project}
                                     onCreate={refetch.flows}
                                 />
