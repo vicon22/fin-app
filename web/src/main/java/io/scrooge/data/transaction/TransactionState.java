@@ -1,13 +1,13 @@
 package io.scrooge.data.transaction;
 
 public enum TransactionState {
-    INITIAL("initial"),
-    PENDING("pending"),
-    APPROVED("approved"),
-    FULFILLED("fulfilled"),
-    CANCELED("canceled"),
-    DELETED("deleted"),
-    RETURNED("returned");
+    INITIAL("INITIAL"),
+    PENDING("PENDING"),
+    APPROVED("APPROVED"),
+    FULFILLED("FULFILLED"),
+    CANCELED("CANCELED"),
+    DELETED("DELETED"),
+    RETURNED("RETURNED");
 
     TransactionState(String s) {
     }

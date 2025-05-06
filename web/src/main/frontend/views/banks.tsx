@@ -1,5 +1,5 @@
 import { ViewConfig } from '@vaadin/hilla-file-router/types.js';
-import { AutoCrud, AutoFormLayoutRendererProps } from '@vaadin/hilla-react-crud';
+import { AutoGrid } from '@vaadin/hilla-react-crud';
 import { useComputed, useSignal } from '@vaadin/hilla-react-signals';
 import { TextField, VerticalLayout } from '@vaadin/react-components';
 import AndFilter from 'Frontend/generated/com/vaadin/hilla/crud/filter/AndFilter';
@@ -41,23 +41,17 @@ export default function BanksView() {
                     nameFilterValue.value = e.detail.value;
                 }}
             />
-            <AutoCrud
+            <AutoGrid
                 className={st.crud}
                 service={BankService}
                 model={BankModel}
-                gridProps={{
-                    noHeaderFilters: true,
-                    experimentalFilter: filter.value
-                }}
-                formProps={{
-                    formLayoutProps: {
-                        className: st.form,
-                    },
-                    fieldOptions: {
-                        name: { label: 'Название' },
-                        reg: { label: 'Рег. номер' },
-                        ogrn: { label: 'ОГРН' },
-                    }
+                
+                noHeaderFilters
+                experimentalFilter={filter.value}
+                columnOptions={{
+                    name: { header: 'Название' },
+                    reg: { header: 'Рег. номер' },
+                    ogrn: { header: 'ОГРН' },
                 }}
             />
         </VerticalLayout>

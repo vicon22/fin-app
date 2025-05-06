@@ -1,8 +1,7 @@
-import {useCallback, useEffect} from 'react';
+import {useCallback, useEffect, useMemo} from 'react';
 import {useSignal} from '@vaadin/hilla-react-signals';
 import {
     Button,
-    ComboBox,
     Dialog,
     HorizontalLayout,
     Icon,
@@ -17,59 +16,119 @@ import {
     TextArea
 } from '@vaadin/react-components';
 import st from './addFlow.module.css';
-import BanksController from 'Frontend/controllers/BanksController';
+import TransactionLegal from 'Frontend/generated/io/scrooge/data/transaction/TransactionLegal';
+import TransactionType from 'Frontend/generated/io/scrooge/data/transaction/TransactionType';
+import TransactionDTO from 'Frontend/generated/io/scrooge/data/transaction/dto/TransactionDTO';
+import TransactionDTOModel from 'Frontend/generated/io/scrooge/data/transaction/dto/TransactionDTOModel';
+import Transaction from 'Frontend/generated/io/scrooge/data/transaction/Transaction';
+import Bank from 'Frontend/generated/io/scrooge/data/bank/Bank';
+import MoneyInput from '../MoneyInput/MoneyInput';
+import { useForm, useFormPart } from '@vaadin/hilla-react-form';
+import { NotEmpty, Positive, Size } from '@vaadin/hilla-lit-form';
 
-type AddFlowProps<T, C> = {
+type AddFlowProps = {
     title: string;
     projectId: string | undefined;
     categories: SelectItem[];
+    banks: Bank[];
+    disabled?: boolean;
     buttonText?: string;
-    create: (projectId: string, categoryId: string, title: string, amount: number) => Promise<T | undefined>;
-    onCreate: (item: T) => void;
+    create: (payload: TransactionDTO) => Promise<Transaction | undefined>;
+    onCreate: (item: Transaction) => void;
 };
 
-export default function AddFlow<T, C>(props: AddFlowProps<T, C>) {
+const telMaxDigits = 10;
+const tinMaxDigits = 12;
+
+export default function AddFlow(props: AddFlowProps) {
     const dialogOpened = useSignal<boolean>(false);
-    const label = useSignal<string | undefined>();
-    const integer = useSignal<number | undefined>();
-    const fraction = useSignal<number | undefined>();
-    const categoryId = useSignal<string | undefined>();
+    const initialSet = useSignal<boolean>(false);
+    const { model, submit, field, setValue, addValidator } = useForm(TransactionDTOModel, {
+        onSubmit: async (e) => {
+          await props
+            .create(e)
+            .then(item => {
+                if (item) {
+                    props.onCreate(item);
+                    close();
+                }
+            });
+        }
+    });
+
+    const amountField = useFormPart(model.amount);
+    const titleField = useFormPart(model.title);
+    const tinField = useFormPart(model.consumer_tin);
+    const telField = useFormPart(model.consumer_tel);
+
+    const consumerAccountField = useFormPart(model.consumer_account);
+    const producerAccountField = useFormPart(model.producer_account);
+
+    useEffect(() => {
+        amountField.addValidator(new Positive({
+            message: 'Укажите сумму платежа'
+        }));
+
+        titleField.addValidator(new NotEmpty({
+            message: 'Укажите название транзакции'
+        }));
+
+        tinField.addValidator(new NotEmpty({
+            message: 'Укажите ИНН'
+        }));
+
+        tinField.addValidator(new Size({
+            min: tinMaxDigits,
+            max: tinMaxDigits,
+            message: `ИНН должен состоять из ${tinMaxDigits} цифр`
+        }));
+
+        telField.addValidator(new NotEmpty({
+            message: 'Укажите телефон'
+        }));
+
+        telField.addValidator(new Size({
+            min: telMaxDigits,
+            max: telMaxDigits,
+            message: `телефон должен состоять из ${telMaxDigits} цифр`
+        }));
+
+        consumerAccountField.addValidator(new NotEmpty({
+            message: 'Укажите счет'
+        }));
+
+        producerAccountField.addValidator(new NotEmpty({
+            message: 'Укажите счет'
+        }));
+    }, []);
+
+    const banksOptions = useMemo(() => (props.banks || []).map(item => ({
+        label: item.name,
+        value: item.id
+    })), [props.banks]);
+
+    useEffect(() => {
+        if (!initialSet.value && props.banks?.length) {
+            setValue({
+                amount: 0,
+                project_id: props.projectId,
+                category_id: props.categories[0]?.value,
+                consumer_bank_id: props.banks[0].id,
+                producer_bank_id: props.banks[10].id,
+                type: TransactionType.INCOME,
+                legal: TransactionLegal.PHYSICAL
+            });
+            
+            initialSet.value = true;
+        }
+    }, [props.banks, initialSet.value])
 
     const close = useCallback(() => {
-        label.value = undefined;
-        integer.value = undefined;
-        fraction.value = undefined;
-        categoryId.value = undefined;
-
         requestAnimationFrame(() => {
             dialogOpened.value = false;
         }) 
     }, []);
-
-    const submit = useCallback(() => {
-        const amount = (integer?.value || 0) * 100 + (fraction.value || 0);
-        const category = categoryId.value;
-        const title = label.value;
-        const projectId = props.projectId;
-    
-        if (projectId && category && title) {
-            props
-                .create(projectId, category, title, amount)
-                .then(item => {
-                    if (item) {
-                        props.onCreate(item);
-                        close();
-                    }
-                });
-        }
-    }, [props.projectId, props.create, props.onCreate]);
-
-    useEffect(() => {
-        if (!categoryId.value) {
-            categoryId.value = props.categories[0]?.value;
-        }
-    }, [props.categories]);
-
+   
     return (
         <>
             <Dialog
@@ -92,126 +151,135 @@ export default function AddFlow<T, C>(props: AddFlowProps<T, C>) {
                     </>
                 )}
             >
-                <BanksController>
-                    {(payload) => {
+                <VerticalLayout className={st.layout}>
+                    <RadioGroup
+                        label="Тип транзакции"
+                        {...field(model.type)}
+                    >
+                        <RadioButton
+                            value={TransactionType.INCOME}
+                            label="Поступление"
+                        />
+                        <RadioButton
+                            value={TransactionType.EXPENSE}
+                            label="Расход"
+                        />
+                    </RadioGroup>
+                    <HorizontalLayout theme="spacing" style={{ justifyContent: 'space-between' }}>
+                        <TextField
+                            style={{ flexGrow: 1 }}
+                            required
+                            label='Название'
+                            {...field(model.title)}
+                        />
+                        <DatePicker
+                            label="Дата операции"
+                            max={(new Date()).toISOString()}
+                            {...field(model.created)}
+                        />
+                    </HorizontalLayout>
 
-                        if (payload.pending) {
-                            return 'Loading'
-                        }
+                    <HorizontalLayout theme="spacing" style={{ justifyContent: 'space-between' }}>
+                        <Select
+                            required
+                            style={{ flexGrow: 1 }}
+                            label='Категория'
+                            items={props.categories}
+                            {...field(model.category_id)}
+                        />
+                      
+                        <MoneyInput
+                            invalid={amountField.invalid}
+                            errorMsg={amountField.errors[0]?.message}
+                            value={amountField.value || 0}
+                            onChange={amountField.setValue}
+                        />
+                    </HorizontalLayout>
 
-                        const banks = payload.data.banks.map(item => ({
-                            label: item.name,
-                            value: item.id
-                        }));
+                    <hr/>
+                    <h5 className={st.subtitle}>Отправитель</h5>
 
-                        return (
-                            <VerticalLayout className={st.layout}>
-                                <HorizontalLayout theme="spacing" style={{ justifyContent: 'space-between' }}>
-                                    <TextField
-                                        style={{ flexGrow: 1 }}
-                                        required
-                                        label='Название'
-                                        value={label.value}
-                                        onChange={e => label.value = e.target.value.trim()}
-                                    />
-                                    <DatePicker label="Дата операции" />
-                                </HorizontalLayout>
+                    <HorizontalLayout theme="spacing" style={{ justifyContent: 'space-between' }}>
+                        <Select
+                            style={{ flexGrow: 1 }}
+                            label="Банк"
+                            items={banksOptions}
+                            {...field(model.producer_bank_id)}
+                        />
+                        <NumberField
+                            style={{ flexGrow: 1 }}
+                            required
+                            label='Счет'
+                            {...field(model.producer_account)}
+                        />
+                    </HorizontalLayout>
 
-                                <HorizontalLayout theme="spacing" style={{ justifyContent: 'space-between' }}>
-                                    <ComboBox
-                                        required
-                                        style={{ flexGrow: 1 }}
-                                        label='Категория'
-                                        items={props.categories}
-                                        value={categoryId.value}
-                                        onChange={e => categoryId.value = e.target.value}
-                                    />
+                    <hr/>
+                    <h5 className={st.subtitle}>Получатель</h5>
 
-                                    <HorizontalLayout className={st.amount}>
-                                        <NumberField
-                                            required
-                                            label='Сумма'
-                                            theme='align-right'
-                                            className={st.integer}
-                                            placeholder='0'
-                                            min={0}
-                                            value={String(integer.value)}
-                                            onChange={e => {
-                                                const value = parseInt(e.target.value);
+                    <RadioGroup
+                        label="Тип лица"
+                        {...field(model.legal)}
+                    >
+                        <RadioButton
+                            value={TransactionLegal.LEGAL}
+                            label="Юридическое"
+                        />
+                        <RadioButton
+                            value={TransactionLegal.PHYSICAL}
+                            label="Физическое"
+                        />
+                    </RadioGroup>
 
-                                                if (value < 0) {
-                                                    integer.value = 0;
-                                                } else {
-                                                    integer.value = value;
-                                                }
-                                            }}
-                                        />
-                                        <div className={st.separator}>.</div>
-                                        <NumberField
-                                            theme='align-right'
-                                            className={st.fraction}
-                                            placeholder='00'
-                                            value={String(fraction.value)}
-                                            onChange={e => {
-                                                const value = parseInt(e.target.value);
+                    <HorizontalLayout theme="spacing" style={{ justifyContent: 'space-between' }}>
+                        <Select
+                            style={{ flexGrow: 1 }}
+                            label="Банк"
+                            items={banksOptions}
+                            {...field(model.consumer_bank_id)}
+                        />
+                        <NumberField
+                            style={{ flexGrow: 1 }}
+                            required
+                            label='Счет'
+                            {...field(model.consumer_account)}
+                        />
+                    </HorizontalLayout>
 
-                                                if (value < 0) {
-                                                    fraction.value = 0;
-                                                } else if (value > 99) {
-                                                    fraction.value = 99;
-                                                } else {
-                                                    fraction.value = value;
-                                                }
-                                            }}
-                                        />
-                                    </HorizontalLayout>
-                                </HorizontalLayout>
+                    <HorizontalLayout theme="spacing" style={{ justifyContent: 'space-between' }}>
+                        <TextField
+                            maxlength={tinMaxDigits}
+                            allowedCharPattern='[0-9]'
+                            style={{ flexGrow: 1 }}
+                            required
+                            label='ИНН'
+                            {...field(model.consumer_tin)}
+                        />
 
-                                <hr/>
-                                <h5 className={st.subtitle}>Отправитель</h5>
+                        <TextField
+                            maxlength={telMaxDigits}
+                            allowedCharPattern='[0-9]'
+                            style={{ flexGrow: 1 }}
+                            required
+                            label='Телефон'
+                            {...field(model.consumer_tel)}
+                        >
+                            <div slot="prefix">+7</div>
+                        </TextField>
+                    </HorizontalLayout>
 
-                                <HorizontalLayout theme="spacing" style={{ justifyContent: 'space-between' }}>
-                                    <Select style={{ flexGrow: 1 }} label="Банк" items={banks} value={banks[0].value} />
-                                    <NumberField style={{ flexGrow: 1 }} required label='Счет' />
-                                </HorizontalLayout>
+                    <hr/>
 
-                                <hr/>
-                                <h5 className={st.subtitle}>Получатель</h5>
-
-                                <RadioGroup label="Тип лица">
-                                    <RadioButton value="legal" label="Юридическое" />
-                                    <RadioButton value="private" label="Физическое" />
-                                </RadioGroup>
-
-                                <HorizontalLayout theme="spacing" style={{ justifyContent: 'space-between' }}>
-                                    <Select style={{ flexGrow: 1 }} label="Банк" items={banks} value={banks[0].value} />
-                                    <NumberField style={{ flexGrow: 1 }} required label='Счет' />
-                                </HorizontalLayout>
-
-                                <HorizontalLayout theme="spacing" style={{ justifyContent: 'space-between' }}>
-                                    <NumberField
-                                    style={{ flexGrow: 1 }}
-                                        required
-                                        label='ИНН'
-                                    />
-
-                                    <NumberField
-                                    style={{ flexGrow: 1 }}
-                                        required
-                                        label='Телефон'
-                                    />
-                                </HorizontalLayout>
-
-                                <hr/>
-
-                                <TextArea label='Комментарии' minRows={3} maxRows={5} />
-                            </VerticalLayout>
-                        );
-                    }}
-                </BanksController>
+                    <TextArea
+                        label='Комментарии'
+                        minRows={3}
+                        maxRows={5}
+                        {...field(model.details)}
+                    />
+                </VerticalLayout>
             </Dialog>
 
-            <Button onClick={() => dialogOpened.value = true} theme={props.buttonText ? undefined : 'icon small'}>
+            <Button disabled={props.disabled} onClick={() => dialogOpened.value = true} theme={props.buttonText ? undefined : 'icon small'}>
                 {props.buttonText || <Icon icon='lumo:plus' />}
             </Button>
         </>

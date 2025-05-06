@@ -1,6 +1,5 @@
 package io.scrooge.data.bank;
 
-import io.scrooge.data.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 

@@ -1,23 +1,24 @@
 import AddFlow from 'Frontend/components/AddFlow/AddFlow';
-import ExpenseCategory from 'Frontend/generated/io/scrooge/data/category/ExpenseCategory';
-import ExpenseFlow from 'Frontend/generated/io/scrooge/data/flow/ExpenseFlow';
 import {categoriesToOptions} from '../../utils';
-import {ExpenseEndpoint} from 'Frontend/generated/endpoints';
+import Transaction from 'Frontend/generated/io/scrooge/data/transaction/Transaction';
+import TransactionCategory from 'Frontend/generated/io/scrooge/data/category/TransactionCategory';
+import { TransactionEndpoint } from 'Frontend/generated/endpoints';
 
 type AddRecordProps = {
     projectId: string | undefined;
-    categories: ExpenseCategory[];
+    categories: TransactionCategory[];
     buttonText?: string;
-    onCreate: (item: ExpenseFlow) => void;
+    onCreate: (item: Transaction) => void;
 };
 
 export function AddRecord(props: AddRecordProps) {
     return (
-        <AddFlow<ExpenseFlow, ExpenseCategory>
+        <AddFlow
+            banks={[]}
             title='Новая транзакция'
             projectId={props.projectId}
             categories={categoriesToOptions(props.categories)}
-            create={ExpenseEndpoint.create}
+            create={TransactionEndpoint.create}
             buttonText={props.buttonText}
             onCreate={props.onCreate}
         /> 

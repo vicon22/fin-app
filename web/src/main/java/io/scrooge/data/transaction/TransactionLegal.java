@@ -1,8 +1,8 @@
 package io.scrooge.data.transaction;
 
 public enum TransactionLegal {
-    LEGAL("legal"),
-    PRIVATE("private");
+    LEGAL("LEGAL"),
+    PHYSICAL("PHYSICAL");
 
     TransactionLegal(String s) {
     }

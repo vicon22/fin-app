@@ -1,8 +1,7 @@
 import {ReactNode, useCallback, useEffect, useState} from 'react';
-import {ExpenseCategoryEndpoint, IncomeCategoryEndpoint} from 'Frontend/generated/endpoints';
-import ExpenseCategory from 'Frontend/generated/io/scrooge/data/category/ExpenseCategory';
-import IncomeCategory from 'Frontend/generated/io/scrooge/data/category/IncomeCategory';
+import {TransactionCategoryEndpoint} from 'Frontend/generated/endpoints';
 import { useParams } from 'react-router';
+import TransactionCategory from 'Frontend/generated/io/scrooge/data/category/TransactionCategory';
 
 type CategoriesControllerProps = {
     children: (payload: {
@@ -10,10 +9,7 @@ type CategoriesControllerProps = {
         pending: boolean;
         refetch: () => Promise<void>;
         data: {
-            categories: {
-                expense: ExpenseCategory[];
-                income: IncomeCategory[];
-            };
+            categories: TransactionCategory[]
         }
     }) => ReactNode;
 };
@@ -22,20 +18,12 @@ export default function CategoriesController(props: CategoriesControllerProps) {
     const {projectId} = useParams();
     const [error, setError] = useState<boolean>(false);
     const [pending, setPending] = useState<boolean>(true);
-    const [expenseCategories, setExpenseCategories] = useState<ExpenseCategory[]>([]);
-    const [incomeCategories, setIncomeCategories] = useState<IncomeCategory[]>([]);
+    const [categories, setCategories] = useState<TransactionCategory[]>([]);
 
     const fetchCategories = useCallback(async () => {
-        const [
-            expenseCategoriesResp,
-            imcomeCategoriesResp
-        ] = await Promise
-            .all([
-                ExpenseCategoryEndpoint.getAll(),
-                IncomeCategoryEndpoint.getAll()
-            ]);
-        setExpenseCategories((expenseCategoriesResp || []).filter(item => !!item));
-        setIncomeCategories((imcomeCategoriesResp || []).filter(item_1 => !!item_1));
+        const items = await TransactionCategoryEndpoint.getAll();
+
+        setCategories((items || []).filter(item => !!item));
     }, []);
 
     useEffect(() => {
@@ -54,10 +42,7 @@ export default function CategoriesController(props: CategoriesControllerProps) {
             pending,
             refetch: fetchCategories,
             data: {
-                categories: {
-                    expense: expenseCategories,
-                    income: incomeCategories
-                }
+                categories,
             }
         })
     );

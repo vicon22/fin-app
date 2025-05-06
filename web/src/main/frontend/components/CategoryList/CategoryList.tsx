@@ -1,18 +1,17 @@
 import {VerticalLayout, VirtualList} from '@vaadin/react-components';
-import ExpenseCategory from 'Frontend/generated/io/scrooge/data/category/ExpenseCategory';
-import IncomeCategory from 'Frontend/generated/io/scrooge/data/category/IncomeCategory';
 import AddCategory from '../AddCategory/AddCategory';
 import st from './categoryList.module.css';
+import TransactionCategory from 'Frontend/generated/io/scrooge/data/category/TransactionCategory';
 
 type CategoryListProps = {
     title: string;
-    items: (ExpenseCategory | IncomeCategory)[];
-    create: (title: string, description: string) => Promise<ExpenseCategory | IncomeCategory | undefined>;
+    items: TransactionCategory[];
+    create: (title: string, description: string) => Promise<TransactionCategory | undefined>;
     onCreate: VoidFunction;
 };
 
 export function CategoryList(props: CategoryListProps) {
-    function renderItem({ item } : {item: ExpenseCategory | IncomeCategory}) {
+    function renderItem({ item } : {item: TransactionCategory}) {
         return <div className={st.item}>
             <div className={st.title}>
                 {item.title}

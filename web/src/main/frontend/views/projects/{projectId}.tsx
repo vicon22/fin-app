@@ -17,9 +17,9 @@ import { Pie, Bar } from 'react-chartjs-2';
 import {HorizontalLayout, VerticalLayout, TabSheet, TabSheetTab} from '@vaadin/react-components';
 import ProjectController from 'Frontend/controllers/ProjectController';
 import { formatAmount } from 'Frontend/util/currency';
-import { IncomeList } from 'Frontend/components/IncomeList/IncomeList';
-import { ExpenseList } from 'Frontend/components/ExpenseList/ExpenseList';
+import { TransactionList } from 'Frontend/components/TransactionList/TransactionList';
 import st from './project.module.css';
+import TransactionType from 'Frontend/generated/io/scrooge/data/transaction/TransactionType';
 
 export const config: ViewConfig = {
   loginRequired: true,
@@ -59,21 +59,43 @@ export default function ProjectView() {
                         </div>
                     )
                 }
-                const ballance = data.totals.income - data.totals.expense;
 
-                const dates = Array.from(new Set([
-                    ...data.flows.expenses,
-                    ...data.flows.incomes
-                ].map(item => new Date(String(item.created)).toLocaleDateString('ru-RU')))).toSorted()
 
-                const expensesMap = data.flows.expenses.reduce<Record<string, number>>((acc, item) => {
-                    acc[new Date(String(item.created)).toLocaleDateString('ru-RU')] = item.amount / 100;
+                const totalExpense = data.transactions.reduce<number>((acc, item) => {
+                    if (item.type === TransactionType.EXPENSE) {
+                        acc += item.amount / 100;
+                    }
+
+                    return acc;
+                }, 0);
+
+
+                const totalIncome = data.transactions.reduce<number>((acc, item) => {
+                    if (item.type === TransactionType.INCOME) {
+                        acc += item.amount / 100;
+                    }
+
+                    return acc;
+                }, 0);
+
+
+                const ballance = totalIncome - totalExpense;
+                
+                const dates = Array.from(new Set(data.transactions.map(item => new Date(String(item.created)).toLocaleDateString('ru-RU')))).toSorted()
+                
+
+                const expensesMap = data.transactions.reduce<Record<string, number>>((acc, item) => {
+                    if (item.type === TransactionType.EXPENSE) {
+                        acc[new Date(String(item.created)).toLocaleDateString('ru-RU')] = item.amount / 100;
+                    }
 
                     return acc;
                 }, {});
 
-                const incomesMap = data.flows.incomes.reduce<Record<string, number>>((acc, item) => {
-                    acc[new Date(String(item.created)).toLocaleDateString('ru-RU')] = item.amount / 100;
+                const incomesMap = data.transactions.reduce<Record<string, number>>((acc, item) => {
+                    if (item.type === TransactionType.INCOME) {
+                        acc[new Date(String(item.created)).toLocaleDateString('ru-RU')] = item.amount / 100;
+                    }
 
                     return acc;
                 }, {});
@@ -100,7 +122,7 @@ export default function ProjectView() {
                                     data={{
                                         labels: ['Доходы', 'Расходы'],
                                         datasets: [{
-                                            data: [data.totals.income, data.totals.expense],
+                                            data: [totalIncome, totalExpense],
                                             backgroundColor: [
                                                'hsla(145, 72%, 31%, 0.5)',
                                                'hsla(3, 85%, 49%, 0.5)',
@@ -144,22 +166,17 @@ export default function ProjectView() {
                         </div>
 
                         <TabSheet>
-                            <TabSheetTab label='Расходы'>
-                                <ExpenseList
+                            <TabSheetTab label='Транзакции'>
+                                <TransactionList
                                     items={data.transactions}
-                                    categories={data.categories.expense}
+                                    categories={data.categories.transactions}
                                     project={data.project}
                                     onCreate={refetch.flows}
                                 />
                             </TabSheetTab>
 
-                            <TabSheetTab label='Доходы'>
-                                <IncomeList
-                                    items={data.flows.incomes}
-                                    categories={data.categories.transactions}
-                                    project={data.project}
-                                    onCreate={refetch.flows}
-                                />
+                            <TabSheetTab label='Отчеты' disabled>
+                                Тут будет конструктор отчетов
                             </TabSheetTab>
                         </TabSheet>
                     </>

@@ -2,7 +2,7 @@ import { ViewConfig } from '@vaadin/hilla-file-router/types.js';
 import { TabSheet, TabSheetTab } from '@vaadin/react-components';
 import { CategoryList } from 'Frontend/components/CategoryList/CategoryList';
 import CategoriesController from 'Frontend/controllers/CategoriesController';
-import { ExpenseCategoryEndpoint, IncomeCategoryEndpoint } from 'Frontend/generated/endpoints';
+import { TransactionCategoryEndpoint } from 'Frontend/generated/endpoints';
 
 export const config: ViewConfig = {
   menu: { order: 3, icon: 'line-awesome/svg/list-solid.svg' },
@@ -15,20 +15,11 @@ export default function CategoriesView() {
         <CategoriesController>
             {({data, refetch}) => (
                 <TabSheet>
-                    <TabSheetTab label='Доходы'>
+                    <TabSheetTab label='Все категории'>
                         <CategoryList
-                            title='Добавить категорию доходов'
-                            create={IncomeCategoryEndpoint.create}
-                            items={data.categories.income}
-                            onCreate={refetch}
-                        />
-                    </TabSheetTab>
-
-                    <TabSheetTab label='Расходы'>
-                        <CategoryList
-                            title='Добавить категорию расходов'
-                            create={ExpenseCategoryEndpoint.create}
-                            items={data.categories.expense}
+                            title='Добавить категорию'
+                            create={TransactionCategoryEndpoint.create}
+                            items={data.categories}
                             onCreate={refetch}
                         />
                     </TabSheetTab>

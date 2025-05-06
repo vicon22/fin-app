@@ -13,7 +13,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID>,
     @Query("select e from Transaction e where project_id = ?1")
     List<Transaction> findAllByProjectId(UUID projectId);
 
-    @Query("select coalesce(sum(e.amount), 0) from ExpenseFlow e where project_id = ?1")
+    @Query("select coalesce(sum(e.amount), 0) from Transaction e where project_id = ?1")
     int totalByProjectId(UUID projectId);
 
     @Query(value = "select " +

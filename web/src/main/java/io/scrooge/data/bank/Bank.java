@@ -1,7 +1,8 @@
 package io.scrooge.data.bank;
 
 import io.scrooge.data.AbstractEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Getter;
 
 @Entity

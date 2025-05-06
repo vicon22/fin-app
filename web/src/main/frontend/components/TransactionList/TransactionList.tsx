@@ -1,14 +1,8 @@
 import {HorizontalLayout, TextField, VerticalLayout, Select} from '@vaadin/react-components';
 import {AutoGrid} from '@vaadin/hilla-react-crud';
-import ExpenseFlow from 'Frontend/generated/io/scrooge/data/flow/ExpenseFlow';
-import ExpenseFlowModel from 'Frontend/generated/io/scrooge/data/flow/ExpenseFlowModel';
-import IncomeFlow from 'Frontend/generated/io/scrooge/data/flow/IncomeFlow';
 import Project from 'Frontend/generated/io/scrooge/data/project/Project';
 import {formatAmount} from 'Frontend/util/currency';
-import ExpenseCategory from 'Frontend/generated/io/scrooge/data/category/ExpenseCategory';
-import {ExpenseService, TransactionService} from 'Frontend/generated/endpoints';
-import {AddRecord} from './components/AddRecord/AddRecord';
-import st from './expenseList.module.css';
+import {TransactionEndpoint, TransactionService} from 'Frontend/generated/endpoints';
 import { useComputed, useSignal } from '@vaadin/hilla-react-signals';
 import PropertyStringFilter from 'Frontend/generated/com/vaadin/hilla/crud/filter/PropertyStringFilter';
 import Matcher from 'Frontend/generated/com/vaadin/hilla/crud/filter/PropertyStringFilter/Matcher';
@@ -16,15 +10,22 @@ import AndFilter from 'Frontend/generated/com/vaadin/hilla/crud/filter/AndFilter
 import Transaction from 'Frontend/generated/io/scrooge/data/transaction/Transaction';
 import TransactionModel from 'Frontend/generated/io/scrooge/data/transaction/TransactionModel';
 import TransactionCategory from 'Frontend/generated/io/scrooge/data/category/TransactionCategory';
+import { categoriesToOptions } from './utils';
+import AddFlow from '../AddFlow/AddFlow';
+import BanksController from 'Frontend/controllers/BanksController';
+import st from './transactionList.module.css';
+import TransactionLegal from 'Frontend/generated/io/scrooge/data/transaction/TransactionLegal';
+import TransactionType from 'Frontend/generated/io/scrooge/data/transaction/TransactionType';
+import TransactionState from 'Frontend/generated/io/scrooge/data/transaction/TransactionState';
 
-type ExpenseListProps = {
+type TransactionListProps = {
     project: Project | undefined;
     items: Transaction[];
     categories: TransactionCategory[];
-    onCreate: (item: IncomeFlow) => void;
+    onCreate: (item: Transaction) => void;
 };
 
-export function ExpenseList(props: ExpenseListProps) {
+export function TransactionList(props: TransactionListProps) {
     const categoryFilterValue = useSignal('all');
     const nameFilterValue = useSignal('');
 
@@ -68,12 +69,21 @@ export function ExpenseList(props: ExpenseListProps) {
 
     function renderAddControl(buttonText: string) {
         return (
-            <AddRecord
-                buttonText={buttonText}
-                projectId={props.project?.id}
-                onCreate={props.onCreate}
-                categories={props.categories}
-            />
+
+            <BanksController>
+                {(payload) => (
+                    <AddFlow
+                        disabled={payload.pending || payload.error}
+                        banks={payload.data.banks || []}
+                        title='Новая транзакция'
+                        projectId={props.project?.id}
+                        categories={categoriesToOptions(props.categories)}
+                        create={TransactionEndpoint.create}
+                        buttonText={buttonText}
+                        onCreate={props.onCreate}
+                    /> 
+                )}
+            </BanksController>
         )
     };
 
@@ -116,10 +126,82 @@ export function ExpenseList(props: ExpenseListProps) {
                         model={TransactionModel}
                         experimentalFilter={filter.value}
                         noHeaderFilters
-                        visibleColumns={['title', 'description', 'category_id', 'amount', 'created']}
+                        visibleColumns={[
+                            'title',
+                            'state',
+                            'type',
+                            'legal',
+                            'description',
+                            'category_id',
+                            'amount', 
+                            'created'
+                        ]}
                         columnOptions={{
                             title : {
                                 header: 'Название',
+                            },
+                            state : {
+                                header: 'Состояние',
+                                renderer: ({ item }: { item: Transaction }) => {
+                                    const params = {
+                                        [TransactionState.INITIAL]: { 
+                                            title: 'Новая',
+                                            className: st.initial
+                                        },
+                                        [TransactionState.PENDING]: {
+                                            title: 'В процессе',
+                                            className: st.pending
+                                        },
+                                        [TransactionState.FULFILLED]: {
+                                            title: 'Выполнено',
+                                            className: st.fulfilled
+                                        },
+                                        [TransactionState.DELETED]: {
+                                            title: 'Удалено',
+                                            className: st.deleted
+                                        },
+                                        [TransactionState.CANCELED]: {
+                                            title: 'Отменена',
+                                            className: st.canceled
+                                        },
+                                        [TransactionState.APPROVED]: {
+                                            title: 'Утверждена',
+                                            className: st.approved
+                                        },
+                                        [TransactionState.RETURNED]: {
+                                            title: 'Возврат',
+                                            className: st.returned
+                                        },
+                                    }
+
+                                    const unit = params[item.state as TransactionState];
+
+                                    return (
+                                        <span className={unit.className}>
+                                            {unit.title}
+                                        </span>
+                                    )
+                                }
+                            },
+
+                            type : {
+                                width: '150px',
+                                header: 'Вид',
+                                renderer: ({ item }: { item: Transaction }) => {
+                                    const isExpense = item.type === TransactionType.EXPENSE;
+
+                                    return (
+                                        <span {...{ theme: isExpense ? 'badge error' : 'badge success' }}>
+                                            {isExpense ? 'Расход' : 'Поступление'}
+                                        </span>
+                                    )
+                                }
+                            },
+                            legal : {
+                                header: 'Тип лица',
+                                renderer: ({ item }: { item: Transaction }) => {
+                                    return item.legal === TransactionLegal.LEGAL ? "Юр." : "Физ."
+                                }
                             },
                             amount: {
                                 header: 'Сумма транзакции',

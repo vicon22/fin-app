@@ -1,8 +1,8 @@
 package io.scrooge.data.transaction;
 
 public enum TransactionType {
-    INCOME("income"),
-    EXPENSE("expense");
+    INCOME("INCOME"),
+    EXPENSE("EXPENSE");
 
     TransactionType(String s) {
     }

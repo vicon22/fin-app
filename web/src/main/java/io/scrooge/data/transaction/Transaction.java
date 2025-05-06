@@ -2,13 +2,12 @@ package io.scrooge.data.transaction;
 
 import io.scrooge.data.AbstractEntity;
 import io.scrooge.data.bank.Bank;
-import io.scrooge.data.category.ExpenseCategory;
-import io.scrooge.data.category.IncomeCategory;
 import io.scrooge.data.category.TransactionCategory;
-import io.scrooge.data.flow.BaseFlow;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 import java.util.Date;
 import java.util.UUID;
@@ -18,14 +17,28 @@ import java.util.UUID;
 @Setter
 @Table(name = "transactions")
 public class Transaction extends AbstractEntity {
-    private int amount;
+    private long amount;
     private UUID category_id;
     private UUID project_id;
+    private UUID consumer_bank_id;
+    private UUID producer_bank_id;
     private String title;
     private String details;
-    private String state;
-    private String flow_type;
-    private String legal_type;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+
+    private TransactionState state;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    @Column(name = "flow_type")
+    private TransactionType type;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    @Column(name = "legal_type")
+    private TransactionLegal legal;
 
     private String producer_account;
     private String consumer_account;

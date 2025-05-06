@@ -3,27 +3,16 @@
 set -e
 
 psql -v ON_ERROR_STOP=1 -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" <<-EOF
-  CREATE TABLE incomes (
-    id          uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-    amount      integer not null,
-    title       varchar(100) not null,
-    project_id  uuid not null references projects(id),
-    category_id uuid not null references income_categories(id),
-    created     timestamp not null default current_timestamp
-  );
-
-  CREATE INDEX incomes_idx ON incomes (project_id, category_id);
-
-  CREATE TYPE transaction_types_enum AS ENUM ('income', 'expense');
-  CREATE TYPE transaction_legals_enum AS ENUM ('legal', 'private');
-  CREATE TYPE transaction_states_enum AS ENUM ('initial', 'pending', 'approved', 'fulfilled', 'canceled', 'deleted', 'returned');
+  CREATE TYPE transaction_types_enum AS ENUM ('INCOME', 'EXPENSE');
+  CREATE TYPE transaction_legals_enum AS ENUM ('LEGAL', 'PHYSICAL');
+  CREATE TYPE transaction_states_enum AS ENUM ('INITIAL', 'PENDING', 'APPROVED', 'FULFILLED', 'CANCELED', 'DELETED', 'RETURNED');
 
   CREATE TABLE transactions (
     id               uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     title            varchar(100) not null,
     details          varchar(300),
     amount           integer not null,
-    state            transaction_states_enum default 'initial',
+    state            transaction_states_enum default 'INITIAL',
     flow_type        transaction_types_enum not null,
     legal_type       transaction_legals_enum not null,
     producer_bank_id uuid not null references banks(id),

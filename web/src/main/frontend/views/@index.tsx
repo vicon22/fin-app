@@ -4,6 +4,7 @@ import { HorizontalLayout, VerticalLayout } from '@vaadin/react-components';
 import { formatAmount, getCurrencySign } from 'Frontend/util/currency';
 import DashboardController from 'Frontend/controllers/DashboardController';
 import st from './Index.module.css';
+import TransactionType from 'Frontend/generated/io/scrooge/data/transaction/TransactionType';
 
 export const config: ViewConfig = {
   menu: { order: 0, icon: 'line-awesome/svg/tachometer-alt-solid.svg' },
@@ -15,6 +16,9 @@ export default function DashboardView() {
     return (
         <DashboardController>
             {({data}) => {
+
+                console.log({data})
+
                 return (
                     <HorizontalLayout theme='spacing margin'>
                         <div className={st.slot}>
@@ -22,8 +26,20 @@ export default function DashboardView() {
 
                             <VerticalLayout theme='spacing-s'>
                                 {data.projects.map(item => {
-                                    const totalExpense = (item.expenses || []).reduce<number>((acc ,item) => acc += (item?.amount || 0) , 0);
-                                    const totalIncome = (item.incomes || []).reduce<number>((acc ,item) => acc += (item?.amount || 0) , 0);
+                                    const totalExpense = (item.transactions || []).reduce<number>((acc ,item) => {
+                                        if (item?.type === TransactionType.EXPENSE) {
+                                            acc += (item?.amount || 0)
+                                        }
+
+                                        return acc;
+                                    } , 0);
+                                    const totalIncome = (item.transactions || []).reduce<number>((acc ,item) => {
+                                        if (item?.type === TransactionType.INCOME) {
+                                            acc += (item?.amount || 0)
+                                        }
+
+                                        return acc;
+                                    } , 0);
                                     const ballance = totalIncome - totalExpense;
 
                                     return (
@@ -44,8 +60,7 @@ export default function DashboardView() {
 
                             <VerticalLayout theme='spacing-s'>
                                 {Object.entries(data.expenseGroups).map(([key, value]) => {
-                                    const category = data.expenseCategories.find(item => item.id === key);
-                                  
+                                    const category = data.categories.find(item => item.id === key);
 
                                     return (
                                         <VerticalLayout className={st.unit} theme='spacing-s'>

@@ -1,9 +1,9 @@
 import {ReactNode, useCallback, useEffect, useState} from 'react';
-import {CurrencyEndpoint, ExpenseCategoryEndpoint, ExpenseEndpoint} from 'Frontend/generated/endpoints';
-import ExpenseCategory from 'Frontend/generated/io/scrooge/data/category/ExpenseCategory';
+import {CurrencyEndpoint, TransactionCategoryEndpoint, TransactionEndpoint} from 'Frontend/generated/endpoints';
 import Project from 'Frontend/generated/io/scrooge/data/project/Project';
 import {useAuth} from 'Frontend/util/auth';
 import Currency from 'Frontend/generated/io/scrooge/data/currency/Currency';
+import TransactionCategory from 'Frontend/generated/io/scrooge/data/category/TransactionCategory';
 
 type ExpenseGroups = Record<string, {currency_id: string, total: number}[]>;
 
@@ -13,7 +13,7 @@ type DashboardControllerProps = {
         pending: boolean;
         data: {
             currencies: Currency[],
-            expenseCategories: ExpenseCategory[],
+            categories: TransactionCategory[],
             expenseGroups: ExpenseGroups;
             projects: Project[];
         }
@@ -26,7 +26,7 @@ export default function DashboardController(props: DashboardControllerProps) {
     const [pending, setPending] = useState<boolean>(true);
     const [expenseGroups, setExpenseGroups] = useState<ExpenseGroups>({});
     const [currencies, setCurrencies] = useState<Currency[]>([]);
-    const [expenseCategories, setExpenseCategories] = useState<ExpenseCategory[]>([]);
+    const [categories, setCategories] = useState<TransactionCategory[]>([]);
 
     const fetchCurrencies = useCallback(async () => {
         const data = await CurrencyEndpoint.getCurrencies();
@@ -35,13 +35,16 @@ export default function DashboardController(props: DashboardControllerProps) {
     }, []);
 
     const fetchCategories = useCallback(async () => {
-        const expenseCategoriesResp = await ExpenseCategoryEndpoint.getAll();
+        const categoriesResp = await TransactionCategoryEndpoint.getAll();
     
-        setExpenseCategories((expenseCategoriesResp || []).filter(item => !!item));
+        setCategories((categoriesResp || []).filter(item => !!item));
     }, []);
    
     const fetchSummary = useCallback(async () => {
-        const data = await ExpenseEndpoint.getTotalByUser(state.user?.id);
+        const data = await TransactionEndpoint.getTotalByUser(state.user?.id);
+
+
+
 
         setExpenseGroups((data || []).reduce<ExpenseGroups>((acc, item) => {
             if (item?.category_id && item.currency_id) {
@@ -78,7 +81,7 @@ export default function DashboardController(props: DashboardControllerProps) {
             pending,
             data: {
                 currencies,
-                expenseCategories,
+                categories,
                 expenseGroups,
                 projects: state?.user?.projects?.filter?.(item => !!item) || []
             }

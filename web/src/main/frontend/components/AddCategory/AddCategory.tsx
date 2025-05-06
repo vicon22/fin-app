@@ -1,14 +1,13 @@
 import {useCallback} from 'react';
 import {useSignal} from '@vaadin/hilla-react-signals';
 import {Button, Dialog, Icon, TextField, VerticalLayout} from '@vaadin/react-components';
-import ExpenseCategory from 'Frontend/generated/io/scrooge/data/category/ExpenseCategory';
-import IncomeCategory from 'Frontend/generated/io/scrooge/data/category/IncomeCategory';
 import st from './addCategory.module.css'
+import TransactionCategory from 'Frontend/generated/io/scrooge/data/category/TransactionCategory';
 
 type AddCategoryProps = {
     title: string;
     buttonText?: string;
-    create: (title: string, description: string) => Promise<ExpenseCategory | IncomeCategory | undefined>;
+    create: (title: string, description: string) => Promise<TransactionCategory | undefined>;
     onCreate: VoidFunction;
 };
 

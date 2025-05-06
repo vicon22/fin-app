@@ -1,0 +1,16 @@
+.wrapper {
+    align-items: baseline;
+}
+
+.integer {
+    max-width: 7.5em;
+}
+
+.fraction {
+    max-width: 3.5em;
+}
+
+.separator {
+    font-weight: bold;
+    padding: 0 .25em;
+}

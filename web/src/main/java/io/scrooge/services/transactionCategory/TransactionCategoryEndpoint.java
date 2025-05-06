@@ -2,9 +2,7 @@ package io.scrooge.services.transactionCategory;
 
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.hilla.Endpoint;
-import io.scrooge.data.category.IncomeCategory;
 import io.scrooge.data.category.TransactionCategory;
-import io.scrooge.data.category.TransactionCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;

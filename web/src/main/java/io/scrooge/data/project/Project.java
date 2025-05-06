@@ -2,8 +2,7 @@ package io.scrooge.data.project;
 
 import io.scrooge.data.AbstractEntity;
 import io.scrooge.data.currency.Currency;
-import io.scrooge.data.flow.ExpenseFlow;
-import io.scrooge.data.flow.IncomeFlow;
+import io.scrooge.data.transaction.Transaction;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,16 +19,10 @@ public class Project extends AbstractEntity {
     private UUID user_id;
     private UUID currency_id;
 
-
     @OneToMany(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "project_id", updatable = false)
     @OrderBy("created ASC")
-    private List<ExpenseFlow> expenses;
-
-    @OneToMany(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "project_id", updatable = false)
-    @OrderBy("created ASC")
-    private List<IncomeFlow> incomes;
+    private List<Transaction> transactions;
 
     @OneToOne()
     @JoinColumn(insertable = false, updatable = false, name = "currency_id", referencedColumnName = "id")
