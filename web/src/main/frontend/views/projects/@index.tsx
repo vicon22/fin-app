@@ -1,7 +1,7 @@
 import { ViewConfig } from '@vaadin/hilla-file-router/types.js';
 import { ProjectList } from 'Frontend/components/ProjectList/ProjectList';
 import ProjectsController from 'Frontend/controllers/ProjectsController';
-import st from './project.module.css';
+import st from './projects.module.css';
 
 export const config: ViewConfig = {
   menu: { order: 2, icon: 'line-awesome/svg/book-solid.svg' },

@@ -17,6 +17,7 @@ import st from './transactionList.module.css';
 import TransactionLegal from 'Frontend/generated/io/scrooge/data/transaction/TransactionLegal';
 import TransactionType from 'Frontend/generated/io/scrooge/data/transaction/TransactionType';
 import TransactionState from 'Frontend/generated/io/scrooge/data/transaction/TransactionState';
+import { NavLink } from 'react-router';
 
 type TransactionListProps = {
     project: Project | undefined;
@@ -139,6 +140,18 @@ export function TransactionList(props: TransactionListProps) {
                         columnOptions={{
                             title : {
                                 header: 'Название',
+                                //
+                                renderer: ({ item }: { item: Transaction }) => {
+                                    const isExpense = item.type === TransactionType.EXPENSE;
+
+                                    return (
+                                        <NavLink
+                                            to={`/projects/${props.project?.id}/transaction/${item.id}`}
+                                        >
+                                            {item.title}
+                                        </NavLink>
+                                    )
+                                }
                             },
                             state : {
                                 header: 'Состояние',

@@ -18,7 +18,7 @@ export function ProjectList(props: ProjectListProps) {
     function renderItem({ item } : {item: Project}) {
         return <div className={st.item}>
             <div className={st.title}>
-                <NavLink to={`/projects/${item.id}/`}>{item.name}</NavLink>
+                <NavLink to={`/projects/${item.id}/overview`}>{item.name}</NavLink>
             </div>
             <div className={st.actions}>
                 <Button theme={'icon small'} onClick={() => {

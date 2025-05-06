@@ -16,9 +16,6 @@ export default function DashboardView() {
     return (
         <DashboardController>
             {({data}) => {
-
-                console.log({data})
-
                 return (
                     <HorizontalLayout theme='spacing margin'>
                         <div className={st.slot}>
@@ -45,7 +42,7 @@ export default function DashboardView() {
                                     return (
                                         <HorizontalLayout className={st.unit} theme='spacing-s'>
                                             <span {...{ theme: 'badge pill' }}>{getCurrencySign(item.currency?.value)}</span>
-                                            <NavLink to={`/projects/${item.id}/`}>{item.name}</NavLink>
+                                            <NavLink to={`/projects/${item.id}/overview`}>{item.name}</NavLink>
                                             <span {...{ theme: ballance == 0 ? 'badge' : ballance < 0 ? 'badge error' : 'badge success' }}>
                                                 {formatAmount(ballance, item.currency)}
                                             </span>

@@ -38,7 +38,7 @@ ChartJS.register(
     Title
 );
 
-export default function ProjectView() {
+export default function ProjectOverview() {
     return (
         <ProjectController>
             {({
@@ -169,7 +169,7 @@ export default function ProjectView() {
                             <TabSheetTab label='Транзакции'>
                                 <TransactionList
                                     items={data.transactions}
-                                    categories={data.categories.transactions}
+                                    categories={data.categories}
                                     project={data.project}
                                     onCreate={refetch.flows}
                                 />

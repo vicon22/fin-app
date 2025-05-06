@@ -18,13 +18,7 @@ type ProjectControllerProps = {
         data: {
             project: Project | undefined,
             transactions: Transaction[],
-            flows: {
-                expenses: Transaction[];
-                incomes: Transaction[];
-            };
-            categories: {
-                transactions: TransactionCategory[];
-            }
+            categories: TransactionCategory[]
         }
     }) => ReactNode;
 };
@@ -36,48 +30,27 @@ export default function ProjectController(props: ProjectControllerProps) {
 
     const [error, setError] = useState<boolean>(false);
     const [pending, setPending] = useState<boolean>(true);
-
-    const [expenses, setExpenses] = useState<Transaction[]>([]);
-    const [incomes, setIncomes] = useState<Transaction[]>([]);
     
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [transactionCategories, setTransactionCategories] = useState<TransactionCategory[]>([]);
 
     const fetchProject = useCallback(() => {
-        return Promise
-            .all([
-                ProjectEndpoint.getProject(state.user?.id, projectId),
-            ])
-            .then(([
-                projectResp,
-            ]) => {
+        return ProjectEndpoint.getProject(state.user?.id, projectId)
+            .then((projectResp) => {
                 setProject(projectResp);
             })
     }, [projectId]);
 
     const fetchFlows = useCallback(() => {
-        return Promise
-            .all([
-                TransactionEndpoint.getProjectTransactions(projectId),
-            ])
-            .then(([
-                transactionsResp,
-            ]) => {
+        return TransactionEndpoint.getProjectTransactions(projectId)
+            .then((transactionsResp) => {
                 setTransactions((transactionsResp || []).filter(p => !!p));
             })
     }, [projectId]);
 
-    
-
     const fetchCategories = useCallback(() => {
-        return Promise
-            .all([
-                TransactionCategoryEndpoint.getAll()
-            ])
-            .then(([
-                transactionCategoriesResp
-            ]) => {
-                
+        return TransactionCategoryEndpoint.getAll()
+            .then((transactionCategoriesResp) => {
                 setTransactionCategories((transactionCategoriesResp || []).filter(item => !!item));
             })
     }, []);
@@ -109,13 +82,7 @@ export default function ProjectController(props: ProjectControllerProps) {
             data: {
                 project,
                 transactions,
-                flows: {
-                    incomes,
-                    expenses,
-                },
-                categories: {
-                    transactions: transactionCategories,
-                }
+                categories: transactionCategories
             }
         })
     );
