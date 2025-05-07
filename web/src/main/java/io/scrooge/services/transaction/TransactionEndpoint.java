@@ -2,9 +2,11 @@ package io.scrooge.services.transaction;
 
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.hilla.Endpoint;
+import com.vaadin.hilla.crud.filter.Filter;
 import io.scrooge.data.transaction.Transaction;
 import io.scrooge.data.transaction.TransactionRepository;
 import io.scrooge.data.transaction.TransactionState;
+import io.scrooge.data.transaction.TransactionType;
 import io.scrooge.data.transaction.dto.FlowCategoryCurrencySum;
 import io.scrooge.data.transaction.dto.FlowCategorySum;
 import io.scrooge.data.transaction.dto.TransactionDTO;
@@ -12,9 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Endpoint
 @AnonymousAllowed
@@ -79,5 +79,13 @@ public class TransactionEndpoint {
 
     public Optional<Transaction> getById(UUID id) {
         return this.service.get(id);
+    }
+
+    public Map<TransactionType, Long> getSummaryByType(Filter filter) {
+        return this.service.getSummaryByType(filter);
+    }
+
+    public Map<UUID, HashMap<TransactionType, Long>> getSummaryByCategory(Filter filter) {
+        return this.service.getSummaryByCategory(filter);
     }
 }

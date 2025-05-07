@@ -17,7 +17,7 @@ import java.util.UUID;
 @Setter
 @Table(name = "transactions")
 public class Transaction extends AbstractEntity {
-    private long amount;
+    private Long amount;
     private UUID category_id;
     private UUID project_id;
     private UUID consumer_bank_id;

@@ -18,6 +18,7 @@ import TransactionLegal from 'Frontend/generated/io/scrooge/data/transaction/Tra
 import TransactionType from 'Frontend/generated/io/scrooge/data/transaction/TransactionType';
 import TransactionState from 'Frontend/generated/io/scrooge/data/transaction/TransactionState';
 import { NavLink } from 'react-router';
+import { useEffect } from 'react';
 
 type TransactionListProps = {
     project: Project | undefined;
@@ -67,6 +68,11 @@ export function TransactionList(props: TransactionListProps) {
       
         return filter;
     });
+
+    useEffect(() => {
+        TransactionEndpoint.getSummaryByType(filter.value).then(console.log)
+        TransactionEndpoint.getSummaryByCategory(filter.value).then(console.log)
+    }, [filter.value])
 
     function renderAddControl(buttonText: string) {
         return (
