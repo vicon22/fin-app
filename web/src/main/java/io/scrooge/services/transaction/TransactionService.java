@@ -6,6 +6,7 @@ import com.vaadin.hilla.crud.JpaFilterConverter;
 import com.vaadin.hilla.crud.filter.Filter;
 import io.scrooge.data.transaction.Transaction;
 import io.scrooge.data.transaction.TransactionRepository;
+import io.scrooge.data.transaction.TransactionState;
 import io.scrooge.data.transaction.TransactionType;
 import io.scrooge.data.transaction.dto.FlowCategoryCurrencySum;
 import io.scrooge.data.transaction.dto.FlowCategorySum;
@@ -63,6 +64,24 @@ public class TransactionService extends CrudRepositoryService<Transaction, UUID,
             }
 
             result.put(type, result.get(type) + elem.getAmount());
+        }
+
+        return result;
+    }
+
+    public Map<TransactionState, Integer> getSummaryByState(Filter filter) {
+        var items = this.repository.findAll(this.getFilterSpec(filter));
+        var result = new HashMap<TransactionState, Integer>();
+
+        for (var item : items) {
+            var elem = (Transaction)item;
+            var state = elem.getState();
+
+            if (!result.containsKey(state)) {
+                result.put(state, 0);
+            }
+
+            result.put(state, result.get(state) + 1);
         }
 
         return result;

@@ -85,6 +85,11 @@ public class TransactionEndpoint {
         return this.service.getSummaryByType(filter);
     }
 
+    public Map<TransactionState, Integer> getSummaryByState(Filter filter) {
+        return this.service.getSummaryByState(filter);
+    }
+
+
     public Map<UUID, HashMap<TransactionType, Long>> getSummaryByCategory(Filter filter) {
         return this.service.getSummaryByCategory(filter);
     }

@@ -3,7 +3,7 @@ import {AutoGrid} from '@vaadin/hilla-react-crud';
 import Project from 'Frontend/generated/io/scrooge/data/project/Project';
 import {formatAmount} from 'Frontend/util/currency';
 import {TransactionEndpoint, TransactionService} from 'Frontend/generated/endpoints';
-import { useComputed, useSignal } from '@vaadin/hilla-react-signals';
+import { ReadonlySignal, Signal, useComputed, useSignal } from '@vaadin/hilla-react-signals';
 import PropertyStringFilter from 'Frontend/generated/com/vaadin/hilla/crud/filter/PropertyStringFilter';
 import Matcher from 'Frontend/generated/com/vaadin/hilla/crud/filter/PropertyStringFilter/Matcher';
 import AndFilter from 'Frontend/generated/com/vaadin/hilla/crud/filter/AndFilter';
@@ -19,8 +19,14 @@ import TransactionType from 'Frontend/generated/io/scrooge/data/transaction/Tran
 import TransactionState from 'Frontend/generated/io/scrooge/data/transaction/TransactionState';
 import { NavLink } from 'react-router';
 import { useEffect } from 'react';
+import { STATE_PARAMS } from 'Frontend/domain/transactions/constants';
 
 type TransactionListProps = {
+    filter: ReadonlySignal<AndFilter>,
+    criterions: {
+        name: Signal<string>;
+        category: Signal<string>
+    }
     project: Project | undefined;
     items: Transaction[];
     categories: TransactionCategory[];
@@ -28,52 +34,6 @@ type TransactionListProps = {
 };
 
 export function TransactionList(props: TransactionListProps) {
-    const categoryFilterValue = useSignal('all');
-    const nameFilterValue = useSignal('');
-
-    const filter = useComputed(() => {
-        const categoryFilter: PropertyStringFilter = {
-          propertyId: 'category_id',
-          filterValue: categoryFilterValue.value,
-          matcher: Matcher.EQUALS,
-          '@type': 'propertyString',
-        };
-      
-        const nameFilter: PropertyStringFilter = {
-          propertyId: 'title',
-          filterValue: nameFilterValue.value,
-          matcher: Matcher.CONTAINS,
-          '@type': 'propertyString',
-        };
-
-        const projectFilter: PropertyStringFilter = {
-            propertyId: 'project_id',
-            filterValue: String(props.project?.id),
-            matcher: Matcher.EQUALS,
-            '@type': 'propertyString',
-        };
-      
-        const filter: AndFilter = {
-            '@type': 'and',
-            children: [
-                nameFilter,
-                projectFilter,
-                
-            ].filter(Boolean),
-        };
-
-        if (categoryFilterValue.value !== 'all') { 
-            filter.children.push(categoryFilter);
-        }
-      
-        return filter;
-    });
-
-    useEffect(() => {
-        TransactionEndpoint.getSummaryByType(filter.value).then(console.log)
-        TransactionEndpoint.getSummaryByCategory(filter.value).then(console.log)
-    }, [filter.value])
-
     function renderAddControl(buttonText: string) {
         return (
 
@@ -103,9 +63,9 @@ export function TransactionList(props: TransactionListProps) {
                     <HorizontalLayout theme='spacing'>
                         <TextField
                             label="Название"
-                            value={nameFilterValue.value}
+                            value={props.criterions.name.value}
                             onValueChanged={(e) => {
-                                nameFilterValue.value = e.detail.value;
+                                props.criterions.name.value = e.detail.value;
                             }}
                         />
 
@@ -121,9 +81,9 @@ export function TransactionList(props: TransactionListProps) {
                                     value: item.id,
                                 }))
                             ]}
-                            value={categoryFilterValue.value}
+                            value={props.criterions.category.value}
                             onValueChanged={(e) => {
-                                categoryFilterValue.value = e.detail.value;
+                                props.criterions.category.value = e.detail.value;
                             }}
                         />
                     </HorizontalLayout>
@@ -131,7 +91,7 @@ export function TransactionList(props: TransactionListProps) {
                     <AutoGrid
                         service={TransactionService}
                         model={TransactionModel}
-                        experimentalFilter={filter.value}
+                        experimentalFilter={props.filter.value}
                         noHeaderFilters
                         visibleColumns={[
                             'title',
@@ -146,10 +106,7 @@ export function TransactionList(props: TransactionListProps) {
                         columnOptions={{
                             title : {
                                 header: 'Название',
-                                //
                                 renderer: ({ item }: { item: Transaction }) => {
-                                    const isExpense = item.type === TransactionType.EXPENSE;
-
                                     return (
                                         <NavLink
                                             to={`/projects/${props.project?.id}/transaction/${item.id}`}
@@ -162,41 +119,10 @@ export function TransactionList(props: TransactionListProps) {
                             state : {
                                 header: 'Состояние',
                                 renderer: ({ item }: { item: Transaction }) => {
-                                    const params = {
-                                        [TransactionState.INITIAL]: { 
-                                            title: 'Новая',
-                                            className: st.initial
-                                        },
-                                        [TransactionState.PENDING]: {
-                                            title: 'В процессе',
-                                            className: st.pending
-                                        },
-                                        [TransactionState.FULFILLED]: {
-                                            title: 'Выполнено',
-                                            className: st.fulfilled
-                                        },
-                                        [TransactionState.DELETED]: {
-                                            title: 'Удалено',
-                                            className: st.deleted
-                                        },
-                                        [TransactionState.CANCELED]: {
-                                            title: 'Отменена',
-                                            className: st.canceled
-                                        },
-                                        [TransactionState.APPROVED]: {
-                                            title: 'Утверждена',
-                                            className: st.approved
-                                        },
-                                        [TransactionState.RETURNED]: {
-                                            title: 'Возврат',
-                                            className: st.returned
-                                        },
-                                    }
-
-                                    const unit = params[item.state as TransactionState];
+                                    const unit = STATE_PARAMS[item.state as TransactionState];
 
                                     return (
-                                        <span className={unit.className}>
+                                        <span style={{ color: unit.color }}>
                                             {unit.title}
                                         </span>
                                     )
@@ -225,7 +151,7 @@ export function TransactionList(props: TransactionListProps) {
                             amount: {
                                 header: 'Сумма транзакции',
                                 renderer: ({ item }: { item: Transaction }) => {
-                                    return formatAmount(item.amount, props.project?.currency)
+                                    return formatAmount(item.amount || 0, props.project?.currency)
                                 }
                             },
                             category_id: {

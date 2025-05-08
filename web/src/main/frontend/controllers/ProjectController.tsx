@@ -5,8 +5,14 @@ import TransactionCategory from 'Frontend/generated/io/scrooge/data/category/Tra
 import Project from 'Frontend/generated/io/scrooge/data/project/Project';
 import Transaction from 'Frontend/generated/io/scrooge/data/transaction/Transaction';
 import {useAuth} from 'Frontend/util/auth';
+import AndFilter from 'Frontend/generated/com/vaadin/hilla/crud/filter/AndFilter';
+import TransactionType from 'Frontend/generated/io/scrooge/data/transaction/TransactionType';
+import {SummaryByCategory, SummaryByState, SummaryByType} from 'Frontend/domain/transactions/types';
+import TransactionState from 'Frontend/generated/io/scrooge/data/transaction/TransactionState';
+import { ReadonlySignal } from '@vaadin/hilla-react-signals';
 
 type ProjectControllerProps = {
+    filter: ReadonlySignal<AndFilter>
     children: (payload: {
         error: boolean;
         pending: boolean;
@@ -18,7 +24,10 @@ type ProjectControllerProps = {
         data: {
             project: Project | undefined,
             transactions: Transaction[],
-            categories: TransactionCategory[]
+            categories: TransactionCategory[],
+            summaryByType: SummaryByType;
+            summaryByState: SummaryByState;
+            summaryByCategory: SummaryByCategory;
         }
     }) => ReactNode;
 };
@@ -33,6 +42,23 @@ export default function ProjectController(props: ProjectControllerProps) {
     
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [transactionCategories, setTransactionCategories] = useState<TransactionCategory[]>([]);
+
+    const [summaryByType, setSummaryByType] = useState<SummaryByType>({
+        [TransactionType.INCOME]: 0,
+        [TransactionType.EXPENSE]: 0,
+    });
+
+    const [summaryByState, setSummaryByState] = useState<SummaryByState>({
+        [TransactionState.INITIAL]: 0,
+        [TransactionState.PENDING]: 0,
+        [TransactionState.FULFILLED]: 0,
+        [TransactionState.DELETED]: 0,
+        [TransactionState.CANCELED]: 0,
+        [TransactionState.APPROVED]: 0,
+        [TransactionState.RETURNED]: 0,
+    });
+
+    const [summaryByCategory, setSummaryByCategory] = useState<SummaryByCategory>({});
 
     const fetchProject = useCallback(() => {
         return ProjectEndpoint.getProject(state.user?.id, projectId)
@@ -55,12 +81,13 @@ export default function ProjectController(props: ProjectControllerProps) {
             })
     }, []);
 
-    useEffect(() => {
+
+    const fetch = useCallback(() => {
         Promise
             .all([
-                fetchProject(),
                 fetchFlows(),
-                fetchCategories()
+                fetchProject(),
+                fetchCategories(),
             ])
             .catch(() => {
                 setError(true);
@@ -68,7 +95,9 @@ export default function ProjectController(props: ProjectControllerProps) {
             .finally(() => {
                 setPending(false)
             })
-    }, [projectId]);
+    }, [])
+
+    useEffect(fetch, [projectId]);
 
     return (
         props.children({
@@ -82,7 +111,10 @@ export default function ProjectController(props: ProjectControllerProps) {
             data: {
                 project,
                 transactions,
-                categories: transactionCategories
+                categories: transactionCategories,
+                summaryByType,
+                summaryByState,
+                summaryByCategory,
             }
         })
     );

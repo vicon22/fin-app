@@ -20,6 +20,10 @@ import { formatAmount } from 'Frontend/util/currency';
 import { TransactionList } from 'Frontend/components/TransactionList/TransactionList';
 import st from './project.module.css';
 import TransactionType from 'Frontend/generated/io/scrooge/data/transaction/TransactionType';
+import { useParams } from 'react-router';
+import { TransactionFilterController } from 'Frontend/controllers/TransactionFilterController';
+import { getSummaryByCategoryChartData, getSummaryByStateChartData, getSummaryByTypeChartData } from './utils';
+import ProjectSummaryController from 'Frontend/controllers/ProjectSummaryController';
 
 export const config: ViewConfig = {
   loginRequired: true,
@@ -40,148 +44,143 @@ ChartJS.register(
 
 export default function ProjectOverview() {
     return (
-        <ProjectController>
-            {({
-                error,
-                pending,
-                data,
-                refetch
-            }) => {
-                if (pending) {
-                    return null;
-                }
-
-                if (error) {
-                    return (
-                        <div className={st.placeholder}>
-                            <h2>Что-то пошло не так :(</h2>
-                            <p>Проверьте id проекта и перезагрузите страницу</p>
-                        </div>
-                    )
-                }
-
-
-                const totalExpense = data.transactions.reduce<number>((acc, item) => {
-                    if (item.type === TransactionType.EXPENSE) {
-                        acc += item.amount / 100;
-                    }
-
-                    return acc;
-                }, 0);
-
-
-                const totalIncome = data.transactions.reduce<number>((acc, item) => {
-                    if (item.type === TransactionType.INCOME) {
-                        acc += item.amount / 100;
-                    }
-
-                    return acc;
-                }, 0);
-
-
-                const ballance = totalIncome - totalExpense;
-                
-                const dates = Array.from(new Set(data.transactions.map(item => new Date(String(item.created)).toLocaleDateString('ru-RU')))).toSorted()
-                
-
-                const expensesMap = data.transactions.reduce<Record<string, number>>((acc, item) => {
-                    if (item.type === TransactionType.EXPENSE) {
-                        acc[new Date(String(item.created)).toLocaleDateString('ru-RU')] = item.amount / 100;
-                    }
-
-                    return acc;
-                }, {});
-
-                const incomesMap = data.transactions.reduce<Record<string, number>>((acc, item) => {
-                    if (item.type === TransactionType.INCOME) {
-                        acc[new Date(String(item.created)).toLocaleDateString('ru-RU')] = item.amount / 100;
-                    }
-
-                    return acc;
-                }, {});
+        <TransactionFilterController>
+            {({filter, criterions}) => {
+                console.log({VAL: criterions.category.value})
 
                 return (
-                    <>
-                        <HorizontalLayout theme="padding spacing">
-                            <VerticalLayout theme="padding spacing">
-                                <h2>{data.project?.name}</h2>
-                                <span {...{ theme: ballance == 0 ? 'badge' : ballance < 0 ? 'badge error' : 'badge success' }}>
-                                    {formatAmount(ballance, data.project?.currency)}
-                                </span>
-                            </VerticalLayout>
+                    <ProjectController filter={filter}>
+                        {({
+                            error,
+                            pending,
+                            data,
+                            refetch
+                        }) => {
+                            if (pending) {
+                                return null;
+                            }
 
-                            <div style={{ width: 120, height: 120 }}>
-                                <Pie
-                                    options={{
-                                       plugins: {
-                                           legend: {
-                                               display: false,
-                                           }
-                                       }
-                                    }}
-                                    data={{
-                                        labels: ['Доходы', 'Расходы'],
-                                        datasets: [{
-                                            data: [totalIncome, totalExpense],
-                                            backgroundColor: [
-                                               'hsla(145, 72%, 31%, 0.5)',
-                                               'hsla(3, 85%, 49%, 0.5)',
-                                            ],
-                                        }],
-                                    }}
-                                />
-                            </div>
-                        </HorizontalLayout>
+                            if (error) {
+                                return (
+                                    <div className={st.placeholder}>
+                                        <h2>Что-то пошло не так :(</h2>
+                                        <p>Проверьте id проекта и перезагрузите страницу</p>
+                                    </div>
+                                )
+                            }
 
-                        <div style={{ width: '100%', height: 400, padding: 40, boxSizing: 'border-box' }}>
-                        <Bar
-                            options={{
-                               responsive: true,
-                               maintainAspectRatio: false,
-                               plugins: {
-                                    legend: {
-                                        display: false,
-                                    },
-                                    title: {
-                                        display: false,
-                                    },
-                               },
-                            }}
-                            data={{
-                                labels: dates,
-                                datasets: [
-                                    {
-                                        label: 'Расходы',
-                                        data: dates.map(item => expensesMap[item]),
-                                        backgroundColor: 'hsla(3, 85%, 49%, 0.5)',
-                                    },
-                                    {
-                                        label: 'Доходы',
-                                        data: dates.map(item => incomesMap[item]),
-                                        backgroundColor: 'hsla(145, 72%, 31%, 0.5)',
-                                    },
-                                ],
-                            }}
-                        />
-                        </div>
+                            const totalExpense = data.transactions.reduce<number>((acc, item) => {
+                                if (item.type === TransactionType.EXPENSE) {
+                                    acc += item.amount || 0;
+                                }
 
-                        <TabSheet>
-                            <TabSheetTab label='Транзакции'>
-                                <TransactionList
-                                    items={data.transactions}
-                                    categories={data.categories}
-                                    project={data.project}
-                                    onCreate={refetch.flows}
-                                />
-                            </TabSheetTab>
+                                return acc;
+                            }, 0);
 
-                            <TabSheetTab label='Отчеты' disabled>
-                                Тут будет конструктор отчетов
-                            </TabSheetTab>
-                        </TabSheet>
-                    </>
+
+                            const totalIncome = data.transactions.reduce<number>((acc, item) => {
+                                if (item.type === TransactionType.INCOME) {
+                                    acc += item.amount || 0;
+                                }
+
+                                return acc;
+                            }, 0);
+
+
+                            const ballance = totalIncome - totalExpense;
+
+                            return (
+                                <>
+                                    <HorizontalLayout theme="padding spacing">
+                                        <VerticalLayout theme="padding spacing">
+                                            <h2>{data.project?.name}</h2>
+                                            <span {...{ theme: ballance == 0 ? 'badge' : ballance < 0 ? 'badge error' : 'badge success' }}>
+                                                {formatAmount(ballance, data.project?.currency)}
+                                            </span>
+                                        </VerticalLayout>
+
+                                        
+                                    </HorizontalLayout>
+
+                                    <TabSheet>
+                                        <TabSheetTab label='Транзакции'>
+                                            <TransactionList
+                                                filter={filter}
+                                                criterions={criterions}
+                                                items={data.transactions}
+                                                categories={data.categories}
+                                                project={data.project}
+                                                onCreate={refetch.flows}
+                                            />
+                                        </TabSheetTab>
+
+                                        <TabSheetTab label='Отчеты'>
+                                            <ProjectSummaryController filter={filter}>
+                                                {(summary) => (
+                                                    <VerticalLayout theme="padding spacing">
+
+                                                        <HorizontalLayout theme="padding spacing">
+                                                            <div style={{ width: 400, height: 350}}>
+                                                                <h4 style={{lineHeight: 3}}>Итоговое распределение</h4>
+                                                                <Pie
+                                                                    options={{
+                                                                    plugins: {
+                                                                        legend: {
+                                                                            display: false,
+                                                                        }
+                                                                    }
+                                                                    }}
+                                                                    data={getSummaryByTypeChartData(summary.data.byType)}
+                                                                />
+                                                            </div>
+
+
+                                                            <div style={{ width: 400, height: 350, marginLeft: 50}}>
+                                                                <h4 style={{lineHeight: 3}}>Итого по категориям</h4>
+                                                                <Pie
+                                                                    options={{
+                                                                    plugins: {
+                                                                        legend: {
+                                                                            display: false,
+                                                                        }
+                                                                    }
+                                                                    }}
+                                                                    data={getSummaryByStateChartData(summary.data.byState)}
+                                                                />
+                                                            </div>
+                                                        </HorizontalLayout>
+
+                                                        
+
+                                                        <div style={{ width: '100%', height: 400, marginTop: 80, boxSizing: 'border-box' }}>
+                                                            <h4 style={{lineHeight: 3}}>Распределени по типу и категории</h4>
+                                                            <Bar
+                                                                options={{
+                                                                responsive: true,
+                                                                maintainAspectRatio: false,
+                                                                plugins: {
+                                                                        legend: {
+                                                                            display: false,
+                                                                        },
+                                                                        title: {
+                                                                            display: false,
+                                                                        },
+                                                                },
+                                                                }}
+                                                                data={getSummaryByCategoryChartData(summary.data.byCategory, data.categories)}
+                                                            />
+                                                        </div>
+                                                    </VerticalLayout>
+                                                )}
+                                            </ProjectSummaryController>
+                                        </TabSheetTab>
+                                    </TabSheet>
+                                </>
+                            )
+                        }}
+                    </ProjectController>
                 )
             }}
-        </ProjectController>
+        </TransactionFilterController>
     );
 }
