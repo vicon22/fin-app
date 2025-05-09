@@ -1,32 +1,25 @@
-import {HorizontalLayout, TextField, VerticalLayout, Select} from '@vaadin/react-components';
-import {AutoGrid} from '@vaadin/hilla-react-crud';
+import {HorizontalLayout, VerticalLayout, Button, Icon} from '@vaadin/react-components';
+import {AutoGrid, AutoGridRef} from '@vaadin/hilla-react-crud';
 import Project from 'Frontend/generated/io/scrooge/data/project/Project';
 import {formatAmount} from 'Frontend/util/currency';
 import {TransactionEndpoint, TransactionService} from 'Frontend/generated/endpoints';
-import { ReadonlySignal, Signal, useComputed, useSignal } from '@vaadin/hilla-react-signals';
-import PropertyStringFilter from 'Frontend/generated/com/vaadin/hilla/crud/filter/PropertyStringFilter';
-import Matcher from 'Frontend/generated/com/vaadin/hilla/crud/filter/PropertyStringFilter/Matcher';
-import AndFilter from 'Frontend/generated/com/vaadin/hilla/crud/filter/AndFilter';
 import Transaction from 'Frontend/generated/io/scrooge/data/transaction/Transaction';
 import TransactionModel from 'Frontend/generated/io/scrooge/data/transaction/TransactionModel';
 import TransactionCategory from 'Frontend/generated/io/scrooge/data/category/TransactionCategory';
-import { categoriesToOptions } from './utils';
+import {categoriesToOptions} from './utils';
 import AddFlow from '../AddFlow/AddFlow';
 import BanksController from 'Frontend/controllers/BanksController';
 import st from './transactionList.module.css';
 import TransactionLegal from 'Frontend/generated/io/scrooge/data/transaction/TransactionLegal';
 import TransactionType from 'Frontend/generated/io/scrooge/data/transaction/TransactionType';
 import TransactionState from 'Frontend/generated/io/scrooge/data/transaction/TransactionState';
-import { NavLink } from 'react-router';
-import { useEffect } from 'react';
-import { STATE_PARAMS } from 'Frontend/domain/transactions/constants';
+import {NavLink} from 'react-router';
+import {STATE_PARAMS} from 'Frontend/domain/transactions/constants';
+import { useRef } from 'react';
+import { TransactionFilterContext } from 'Frontend/domain/transactions/types';
+import { TransactionFilter } from '../TransactionFilter/TransactionFilter';
 
-type TransactionListProps = {
-    filter: ReadonlySignal<AndFilter>,
-    criterions: {
-        name: Signal<string>;
-        category: Signal<string>
-    }
+type TransactionListProps = TransactionFilterContext & {
     project: Project | undefined;
     items: Transaction[];
     categories: TransactionCategory[];
@@ -34,22 +27,37 @@ type TransactionListProps = {
 };
 
 export function TransactionList(props: TransactionListProps) {
-    function renderAddControl(buttonText: string) {
-        return (
+    const gridRef = useRef<AutoGridRef>(null);
 
+    function renderToolbar(buttonText: string, needFilter?: boolean) {
+        return (
             <BanksController>
-                {(payload) => (
-                    <AddFlow
-                        disabled={payload.pending || payload.error}
-                        banks={payload.data.banks || []}
-                        title='Новая транзакция'
-                        projectId={props.project?.id}
-                        categories={categoriesToOptions(props.categories)}
-                        create={TransactionEndpoint.create}
-                        buttonText={buttonText}
-                        onCreate={props.onCreate}
-                    /> 
-                )}
+                {(payload) => {
+                    return (
+                        <VerticalLayout theme='spacing'>
+                            <AddFlow
+                                disabled={payload.pending || payload.error}
+                                banks={payload.data.banks || []}
+                                title='Новая транзакция'
+                                projectId={props.project?.id}
+                                categories={categoriesToOptions(props.categories)}
+                                create={TransactionEndpoint.create}
+                                buttonText={buttonText}
+                                onCreate={props.onCreate}
+                            />
+
+                            {needFilter && (
+                                <TransactionFilter
+                                    filter={props.filter}
+                                    criterions={props.criterions}
+                                    settings={props.settings}
+                                    categories={props.categories}
+                                    banks={payload.data.banks}
+                                />
+                            )}
+                        </VerticalLayout>
+                    )
+                }}
             </BanksController>
         )
     };
@@ -58,37 +66,10 @@ export function TransactionList(props: TransactionListProps) {
         props.items.length
             ? (
                 <VerticalLayout theme='spacing'>
-                    {renderAddControl('Добавить расход')}
-
-                    <HorizontalLayout theme='spacing'>
-                        <TextField
-                            label="Название"
-                            value={props.criterions.name.value}
-                            onValueChanged={(e) => {
-                                props.criterions.name.value = e.detail.value;
-                            }}
-                        />
-
-                        <Select
-                            label="Категория"
-                            items={[
-                                {
-                                    label: 'Все',
-                                    value: 'all',
-                                },
-                                ...props.categories.map(item => ({
-                                    label: item.title,
-                                    value: item.id,
-                                }))
-                            ]}
-                            value={props.criterions.category.value}
-                            onValueChanged={(e) => {
-                                props.criterions.category.value = e.detail.value;
-                            }}
-                        />
-                    </HorizontalLayout>
+                    {renderToolbar('Добавить транзакцию', true)}
 
                     <AutoGrid
+                        ref={gridRef}
                         service={TransactionService}
                         model={TransactionModel}
                         experimentalFilter={props.filter.value}
@@ -107,12 +88,29 @@ export function TransactionList(props: TransactionListProps) {
                             title : {
                                 header: 'Название',
                                 renderer: ({ item }: { item: Transaction }) => {
+                                    const ediatable = STATE_PARAMS[item.state as TransactionState].editable;
+
                                     return (
-                                        <NavLink
-                                            to={`/projects/${props.project?.id}/transaction/${item.id}`}
-                                        >
-                                            {item.title}
-                                        </NavLink>
+                                        <HorizontalLayout className={st.name}>
+                                            <Button
+                                                theme="icon small secondary error"
+                                                aria-label="Удалить"
+                                                disabled={!ediatable}
+                                                onClick={() => {
+                                                    TransactionEndpoint.markDeleted(item.id).then(() => {
+                                                        gridRef.current?.refresh()
+                                                    })
+                                                }}
+                                            >
+                                                <Icon icon="vaadin:close-small" />
+                                            </Button>
+                                            <NavLink
+                                                to={`/projects/${props.project?.id}/transaction/${item.id}`}
+                                            >
+                                                {item.title}
+                                            </NavLink>
+                                        </HorizontalLayout>
+                                        
                                     )
                                 }
                             },
@@ -172,9 +170,9 @@ export function TransactionList(props: TransactionListProps) {
             )
             : (
                 <div className={st.placeholder}>
-                    <h2>Расходов пока нет</h2>
-                    <p>Создате первую запись о расходах</p>
-                    {renderAddControl('Создать запись')}
+                    <h2>Транзакций пока нет</h2>
+                    <p>Создате первую запись</p>
+                    {renderToolbar('Создать транзакцию')}
                 </div>
             )
     )

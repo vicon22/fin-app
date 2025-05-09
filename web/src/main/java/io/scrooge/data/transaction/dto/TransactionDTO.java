@@ -1,11 +1,13 @@
 package io.scrooge.data.transaction.dto;
 
 import io.scrooge.data.transaction.TransactionLegal;
+import io.scrooge.data.transaction.TransactionState;
 import io.scrooge.data.transaction.TransactionType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
 
@@ -16,6 +18,7 @@ public class TransactionDTO {
     private Long amount;
     private UUID category_id;
     private UUID project_id;
+    private TransactionState state;
     private String title;
     private String details;
     private TransactionType type;
@@ -26,5 +29,5 @@ public class TransactionDTO {
     private String consumer_tel;
     private UUID consumer_bank_id;
     private UUID producer_bank_id;
-    private Date created;
+    private LocalDate created;
 }

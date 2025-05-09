@@ -51,6 +51,7 @@ public class TransactionService extends CrudRepositoryService<Transaction, UUID,
                 ? JpaFilterConverter.toSpec(filter, Transaction.class)
                 : Specification.anyOf();
     }
+
     public Map<TransactionType, Long> getSummaryByType(Filter filter) {
         var items = this.repository.findAll(this.getFilterSpec(filter));
         var result = new HashMap<TransactionType, Long>();

@@ -52,6 +52,7 @@ export default function AddFlowModal(props: AddFlowModalProps) {
                 )}
             >
                 <TransactionForm
+                    mode='create'
                     form={props.form}
                     banks={props.banks}
                     categories={props.categories}

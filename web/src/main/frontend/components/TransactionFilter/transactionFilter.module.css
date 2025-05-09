@@ -1,0 +1,8 @@
+.filter,
+.unit {
+    width: 100%;
+}
+
+.field {
+    flex-grow: 1;
+}

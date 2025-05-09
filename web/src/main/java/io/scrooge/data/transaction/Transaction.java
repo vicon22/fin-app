@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
 
@@ -58,5 +59,5 @@ public class Transaction extends AbstractEntity {
     private Bank producer_bank;
 
     @Column(insertable = false, updatable = false)
-    private Date created;
+    private LocalDate created;
 }

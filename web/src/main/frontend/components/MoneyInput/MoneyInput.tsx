@@ -1,4 +1,4 @@
-import {useCallback} from 'react';
+import {useCallback, useEffect} from 'react';
 import {useSignal} from '@vaadin/hilla-react-signals';
 import {
     HorizontalLayout,
@@ -9,6 +9,7 @@ import {combineParts, getFraction, getInteger} from './utils';
 import { ValueError } from '@vaadin/hilla-lit-form';
 
 type MoneyInputProps = {
+    disabled?: boolean;
     invalid?: boolean;
     errorMsg?: string;
     value: number;
@@ -19,6 +20,11 @@ export default function MoneyInput(props: MoneyInputProps) {
     const integer = useSignal<number | undefined>(getInteger(props.value || 0));
     const fraction = useSignal<number | undefined>(getFraction(props.value || 0));
 
+    useEffect(() => {
+        integer.value = getInteger(props.value || 0);
+        fraction.value = getFraction(props.value || 0);
+    }, [props.value]);
+
     const onChange = useCallback(() => {
         props.onChange(combineParts(integer.value || 0, fraction.value || 0))
     }, [props.onChange]);
@@ -27,6 +33,7 @@ export default function MoneyInput(props: MoneyInputProps) {
         <HorizontalLayout className={st.wrapper}>
             <NumberField
                 required
+                disabled={props.disabled}
                 label='Сумма'
                 theme='align-right'
                 invalid={props.invalid}
@@ -49,6 +56,7 @@ export default function MoneyInput(props: MoneyInputProps) {
             />
             <div className={st.separator}>.</div>
             <NumberField
+                disabled={props.disabled}
                 invalid={props.invalid}
                 theme='align-right'
                 className={st.fraction}

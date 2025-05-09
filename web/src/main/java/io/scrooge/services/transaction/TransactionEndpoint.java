@@ -62,6 +62,8 @@ public class TransactionEndpoint {
         entity.setConsumer_tin(payload.getConsumer_tin());
         entity.setConsumer_tel(payload.getConsumer_tel());
 
+        entity.setDetails(payload.getDetails());
+
         return entity;
     }
 
@@ -89,8 +91,19 @@ public class TransactionEndpoint {
         return this.service.getSummaryByState(filter);
     }
 
-
     public Map<UUID, HashMap<TransactionType, Long>> getSummaryByCategory(Filter filter) {
         return this.service.getSummaryByCategory(filter);
+    }
+
+    public Transaction markDeleted(UUID id) {
+        var current = this.service.get(id).orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "transaction not found"
+        ));
+
+        current.setState(TransactionState.DELETED);
+
+        this.service.save(current);
+
+        return current;
     }
 }

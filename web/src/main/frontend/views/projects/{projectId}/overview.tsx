@@ -45,8 +45,8 @@ ChartJS.register(
 export default function ProjectOverview() {
     return (
         <TransactionFilterController>
-            {({filter, criterions}) => {
-                console.log({VAL: criterions.category.value})
+            {({filter, criterions, settings}) => {
+             
 
                 return (
                     <ProjectController filter={filter}>
@@ -98,8 +98,6 @@ export default function ProjectOverview() {
                                                 {formatAmount(ballance, data.project?.currency)}
                                             </span>
                                         </VerticalLayout>
-
-                                        
                                     </HorizontalLayout>
 
                                     <TabSheet>
@@ -107,6 +105,7 @@ export default function ProjectOverview() {
                                             <TransactionList
                                                 filter={filter}
                                                 criterions={criterions}
+                                                settings={settings}
                                                 items={data.transactions}
                                                 categories={data.categories}
                                                 project={data.project}
