@@ -58,6 +58,6 @@ public class Transaction extends AbstractEntity {
     @JoinColumn(insertable = false, updatable = false, name = "producer_bank_id", referencedColumnName = "id")
     private Bank producer_bank;
 
-    @Column(insertable = false, updatable = false)
+    @Column(name = "created")
     private LocalDate created;
 }

@@ -67,6 +67,10 @@ public class TransactionEndpoint {
 
         entity.setDetails(payload.getDetails());
 
+        if (payload.getCreated() != null) {
+            entity.setCreated(payload.getCreated());
+        }
+
         return entity;
     }
 
