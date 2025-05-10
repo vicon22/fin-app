@@ -118,6 +118,45 @@ public class TransactionService extends CrudRepositoryService<Transaction, UUID,
         return result;
     }
 
+    public Map<UUID, Map<String, Long>> getSummaryByBank(Filter filter) {
+        var items = this.repository.findAll(this.getFilterSpec(filter));
+        var result = new HashMap<UUID, Map<String, Long>>();
+
+        for (var item : items) {
+            var elem = (Transaction)item;
+
+            if (elem.getProducer_bank() != null) {
+                var bankId = elem.getProducer_bank_id();
+
+                if (!result.containsKey(bankId)) {
+                    result.put(bankId, new HashMap<>() {{
+                        put("producer", 0L);
+                        put("consumer", 0L);
+                    }});
+                }
+
+                var bankData = result.get(bankId);
+                bankData.put("producer", bankData.get("producer") + elem.getAmount());
+            }
+
+            if (elem.getConsumer_bank() != null) {
+                var bankId = elem.getConsumer_bank_id();
+
+                if (!result.containsKey(bankId)) {
+                    result.put(bankId, new HashMap<>() {{
+                        put("producer", 0L);
+                        put("consumer", 0L);
+                    }});
+                }
+
+                var bankData = result.get(bankId);
+                bankData.put("consumer", bankData.get("consumer") + elem.getAmount());
+            }
+        }
+
+        return result;
+    }
+
     public byte[] downloadReport(Filter filter) throws IOException {
 
         List<Transaction> transactions = this.repository.findAll(this.getFilterSpec(filter));
