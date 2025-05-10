@@ -1,5 +1,6 @@
 import { STATE_PARAMS } from 'Frontend/domain/transactions/constants';
-import {SummaryByCategory, SummaryByState, SummaryByType} from 'Frontend/domain/transactions/types';
+import {SummaryByBank, SummaryByCategory, SummaryByState, SummaryByType} from 'Frontend/domain/transactions/types';
+import Bank from 'Frontend/generated/io/scrooge/data/bank/Bank';
 import TransactionCategory from 'Frontend/generated/io/scrooge/data/category/TransactionCategory';
 import TransactionState from 'Frontend/generated/io/scrooge/data/transaction/TransactionState';
 import TransactionType from 'Frontend/generated/io/scrooge/data/transaction/TransactionType';
@@ -62,6 +63,45 @@ export function getSummaryByCategoryChartData(input: SummaryByCategory, categori
             target.data.push((value || 0) / 100);
         }
     }
+
+    return result;
+}
+
+export function getSummaryByBankChartData(input: SummaryByBank, banks: Bank[]) {
+    const producer = {
+        label: 'Отправитель',
+        data: [] as number[],
+        backgroundColor: 'hsla(211, 90%, 50%, 0.5)',
+    };
+
+    const consumer = {
+        label: 'Получатель',
+        data: [] as number[],
+        backgroundColor: 'hsla(271, 90%, 50%, 0.5)',
+    };
+
+    const bankEntries = Object.keys(input).map(id => ({
+        id,
+        name: banks.find(bank => bank.id === id)?.name || id
+    }));
+
+    bankEntries.sort((a, b) => a.name.localeCompare(b.name));
+
+    const result = {
+        labels: bankEntries.map(bank => bank.name),
+        datasets: [
+            producer,
+            consumer,
+        ]
+    };
+
+    bankEntries.forEach(bank => {
+        const unit = input[bank.id];
+        if (unit) {
+            producer.data.push((unit['producer'] || 0) / 100);
+            consumer.data.push((unit['consumer'] || 0) / 100);
+        }
+    });
 
     return result;
 }

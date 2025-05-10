@@ -7,7 +7,7 @@ import Transaction from 'Frontend/generated/io/scrooge/data/transaction/Transact
 import {useAuth} from 'Frontend/util/auth';
 import AndFilter from 'Frontend/generated/com/vaadin/hilla/crud/filter/AndFilter';
 import TransactionType from 'Frontend/generated/io/scrooge/data/transaction/TransactionType';
-import {SummaryByCategory, SummaryByState, SummaryByType} from 'Frontend/domain/transactions/types';
+import {SummaryByBank, SummaryByCategory, SummaryByState, SummaryByType} from 'Frontend/domain/transactions/types';
 import TransactionState from 'Frontend/generated/io/scrooge/data/transaction/TransactionState';
 import { ReadonlySignal } from '@vaadin/hilla-react-signals';
 
@@ -21,6 +21,7 @@ type ProjectSummaryControllerProps = {
             byType: SummaryByType;
             byState: SummaryByState;
             byCategory: SummaryByCategory;
+            byBank: SummaryByBank;
         }
     }) => ReactNode;
 };
@@ -49,6 +50,8 @@ export default function ProjectSummaryController(props: ProjectSummaryController
 
     const [byCategory, setByCategory] = useState<SummaryByCategory>({});
 
+    const [byBank, setByBank] = useState<SummaryByBank>({});
+
     const fetchSummaryByType = useCallback(() => {
         return TransactionEndpoint.getSummaryByType(props.filter.value)
             .then((resp) => {
@@ -76,6 +79,19 @@ export default function ProjectSummaryController(props: ProjectSummaryController
             })
     }, [props.filter.value]);
 
+    const fetchSummaryByBank = useCallback(() => {
+        if (typeof TransactionEndpoint.getSummaryByBank === 'function') {
+            return TransactionEndpoint.getSummaryByBank(props.filter.value)
+                .then((resp) => {
+                    if (resp) {
+                        setByBank(resp);
+                    }
+                });
+        } else {
+            console.warn('getSummaryByBank method not available');
+            return Promise.resolve();
+        }
+    }, [props.filter.value]);
 
     const fetch = useCallback(() => {
         return Promise
@@ -83,6 +99,7 @@ export default function ProjectSummaryController(props: ProjectSummaryController
                 fetchSummaryByType(),
                 fetchSummaryByState(),
                 fetchSummaryByCategory(),
+                fetchSummaryByBank()
             ])
             .catch(() => {
                 setError(true);
@@ -90,7 +107,7 @@ export default function ProjectSummaryController(props: ProjectSummaryController
             .finally(() => {
                 setPending(false)
             })
-    }, [])
+    }, [fetchSummaryByType, fetchSummaryByState, fetchSummaryByCategory, fetchSummaryByBank])
 
     useEffect(() => {
         fetch()
@@ -109,6 +126,7 @@ export default function ProjectSummaryController(props: ProjectSummaryController
                 byType,
                 byState,
                 byCategory,
+                byBank
             }
         })
     );
