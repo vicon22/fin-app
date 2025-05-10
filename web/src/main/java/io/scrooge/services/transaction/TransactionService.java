@@ -4,10 +4,7 @@ import com.vaadin.hilla.BrowserCallable;
 import com.vaadin.hilla.crud.CrudRepositoryService;
 import com.vaadin.hilla.crud.JpaFilterConverter;
 import com.vaadin.hilla.crud.filter.Filter;
-import io.scrooge.data.transaction.Transaction;
-import io.scrooge.data.transaction.TransactionRepository;
-import io.scrooge.data.transaction.TransactionState;
-import io.scrooge.data.transaction.TransactionType;
+import io.scrooge.data.transaction.*;
 import io.scrooge.data.transaction.dto.FlowCategoryCurrencySum;
 import io.scrooge.data.transaction.dto.FlowCategorySum;
 import jakarta.annotation.security.RolesAllowed;
@@ -19,10 +16,12 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @BrowserCallable
 @Service
@@ -114,6 +113,23 @@ public class TransactionService extends CrudRepositoryService<Transaction, UUID,
             unit.put(type, unit.get(type) + elem.getAmount());
             result.put(catId, unit);
         }
+
+        return result;
+    }
+
+    public Map<TransactionTime, Long> getSummaryByTime(Filter filter) {
+        List<Transaction> items = this.repository.findAll(this.getFilterSpec(filter));
+        var result = new HashMap<TransactionTime, Long>();
+
+        LocalDate oneWeekAgo = LocalDate.now().minusWeeks(1);
+        LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
+        LocalDate oneQuarterAgo = LocalDate.now().minusMonths(3);
+        LocalDate oneYearAgo = LocalDate.now().minusYears(1);
+
+        result.put(TransactionTime.WEEK, items.stream().filter(transaction -> transaction.getCreated().isAfter(oneWeekAgo)).count());
+        result.put(TransactionTime.MONTH, items.stream().filter(transaction -> transaction.getCreated().isAfter(oneMonthAgo)).count());
+        result.put(TransactionTime.QUARTER, items.stream().filter(transaction -> transaction.getCreated().isAfter(oneQuarterAgo)).count());
+        result.put(TransactionTime.YEAR, items.stream().filter(transaction -> transaction.getCreated().isAfter(oneYearAgo)).count());
 
         return result;
     }
