@@ -1,5 +1,6 @@
 import { STATE_PARAMS } from 'Frontend/domain/transactions/constants';
-import {SummaryByCategory, SummaryByState, SummaryByType} from 'Frontend/domain/transactions/types';
+import {SummaryByBank, SummaryByCategory, SummaryByState, SummaryByType} from 'Frontend/domain/transactions/types';
+import Bank from 'Frontend/generated/io/scrooge/data/bank/Bank';
 import TransactionCategory from 'Frontend/generated/io/scrooge/data/category/TransactionCategory';
 import TransactionState from 'Frontend/generated/io/scrooge/data/transaction/TransactionState';
 import TransactionType from 'Frontend/generated/io/scrooge/data/transaction/TransactionType';
@@ -9,8 +10,8 @@ export function getSummaryByTypeChartData(input: SummaryByType) {
         labels: ['Доходы', 'Расходы'],
         datasets: [{
             data: [
-                input[TransactionType.INCOME],
-                input[TransactionType.EXPENSE]
+                (input[TransactionType.INCOME] || 0) / 100,
+                (input[TransactionType.EXPENSE] || 0) / 100
             ],
             backgroundColor: [
                 'hsla(145, 72%, 31%, 0.5)',
@@ -62,6 +63,62 @@ export function getSummaryByCategoryChartData(input: SummaryByCategory, categori
             target.data.push((value || 0) / 100);
         }
     }
+
+    return result;
+}
+
+export function getSummaryByBankChartData(input: SummaryByBank, banks: Bank[]) {
+    const producerEntries = Object.keys(input).map(id => ({
+        id,
+        name: banks.find(bank => bank.id === id)?.name || id,
+        value: (input[id]?.['producer'] || 0) / 100
+    }));
+    
+    const consumerEntries = Object.keys(input).map(id => ({
+        id,
+        name: banks.find(bank => bank.id === id)?.name || id,
+        value: (input[id]?.['consumer'] || 0) / 100
+    }));
+
+    producerEntries.sort((a, b) => b.value - a.value);
+    consumerEntries.sort((a, b) => a.value - b.value);
+    const combinedEntries = [...producerEntries, ...consumerEntries];
+    const uniqueIds = new Set<string>();
+    const uniqueEntries = combinedEntries.filter(entry => {
+        if (uniqueIds.has(entry.id)) {
+            return false;
+        }
+        uniqueIds.add(entry.id);
+        return true;
+    });
+    
+    const producer = {
+        label: 'Отправитель',
+        data: [] as number[],
+        backgroundColor: 'hsla(211, 90%, 50%, 0.5)',
+    };
+
+    const consumer = {
+        label: 'Получатель',
+        data: [] as number[],
+        backgroundColor: 'hsla(271, 90%, 50%, 0.5)',
+    };
+
+    const result = {
+        labels: uniqueEntries.map(entry => entry.name),
+        datasets: [
+            producer,
+            consumer,
+        ]
+    };
+
+    uniqueEntries.forEach(entry => {
+        const unit = input[entry.id];
+        if (unit) {
+            producer.data.push((unit['producer'] || 0) / 100);
+            consumer.data.push((unit['consumer'] || 0) / 100);
+        }
+    });
 
     return result;
 }

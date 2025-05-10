@@ -24,6 +24,8 @@ import { useParams } from 'react-router';
 import { TransactionFilterController } from 'Frontend/controllers/TransactionFilterController';
 import { getSummaryByCategoryChartData, getSummaryByStateChartData, getSummaryByTypeChartData } from './utils';
 import ProjectSummaryController from 'Frontend/controllers/ProjectSummaryController';
+import BanksController from 'Frontend/controllers/BanksController';
+import { getSummaryByBankChartData } from './utils';
 
 export const config: ViewConfig = {
   loginRequired: true,
@@ -169,6 +171,35 @@ export default function ProjectOverview() {
                                                                 data={getSummaryByCategoryChartData(summary.data.byCategory, data.categories)}
                                                             />
                                                         </div>
+
+                                                        <BanksController>
+                                                            {({data: banksData, pending: banksPending}) => (
+                                                                <div style={{ width: '100%', height: 400, marginTop: 80, boxSizing: 'border-box' }}>
+                                                                    <h4 style={{lineHeight: 3}}>Распределение по банкам</h4>
+                                                                    {!banksPending && summary.data.byBank && Object.keys(summary.data.byBank).length > 0 && (
+                                                                        <Bar
+                                                                            options={{
+                                                                                responsive: true,
+                                                                                maintainAspectRatio: false,
+                                                                                plugins: {
+                                                                                    legend: {
+                                                                                        display: true,
+                                                                                        position: 'top',
+                                                                                    },
+                                                                                    title: {
+                                                                                        display: false,
+                                                                                    },
+                                                                                },
+                                                                            }}
+                                                                            data={getSummaryByBankChartData(summary.data.byBank, banksData.banks)}
+                                                                        />
+                                                                    )}
+                                                                    {(!summary.data.byBank || Object.keys(summary.data.byBank).length === 0) && (
+                                                                        <p>Данные по банкам недоступны. Обновите страницу после перезапуска сервера.</p>
+                                                                    )}
+                                                                </div>
+                                                            )}
+                                                        </BanksController>
                                                     </VerticalLayout>
                                                 )}
                                             </ProjectSummaryController>

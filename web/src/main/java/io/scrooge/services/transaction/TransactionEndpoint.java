@@ -102,6 +102,10 @@ public class TransactionEndpoint {
         return this.service.getSummaryByCategory(filter);
     }
 
+    public Map<UUID, Map<String, Long>> getSummaryByBank(Filter filter) {
+        return this.service.getSummaryByBank(filter);
+    }
+
     public Transaction markDeleted(UUID id) {
         var current = this.service.get(id).orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.NOT_FOUND, "transaction not found"
