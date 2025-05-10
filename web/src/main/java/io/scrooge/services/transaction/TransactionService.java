@@ -117,9 +117,15 @@ public class TransactionService extends CrudRepositoryService<Transaction, UUID,
         return result;
     }
 
-    public Map<TransactionTime, Long> getSummaryByTime(Filter filter) {
+    public Map<TransactionTime, Long> getSummaryByTime(Filter filter, TransactionType type) {
         List<Transaction> items = this.repository.findAll(this.getFilterSpec(filter));
         var result = new HashMap<TransactionTime, Long>();
+
+        if (type != null) {
+            items = items.stream()
+                    .filter(item -> item.getType() == type)
+                    .toList();
+        }
 
         LocalDate oneWeekAgo = LocalDate.now().minusWeeks(1);
         LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);

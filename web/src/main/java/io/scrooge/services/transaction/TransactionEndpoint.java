@@ -91,7 +91,15 @@ public class TransactionEndpoint {
     }
 
     public Map<TransactionTime, Long> getSummaryByTime(Filter filter) {
-        return this.service.getSummaryByTime(filter);
+        return this.service.getSummaryByTime(filter, null);
+    }
+
+    public Map<TransactionTime, Long> getSummaryIncomeByTime(Filter filter) {
+        return this.service.getSummaryByTime(filter, TransactionType.INCOME);
+    }
+
+    public Map<TransactionTime, Long> getSummaryExpenseByTime(Filter filter) {
+        return this.service.getSummaryByTime(filter, TransactionType.EXPENSE);
     }
 
     public Map<TransactionState, Integer> getSummaryByState(Filter filter) {
