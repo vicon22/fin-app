@@ -122,6 +122,6 @@ public class TransactionEndpoint {
     }
 
     public HttpEntity<byte[]> downloadReport(Filter filter) throws IOException {
-        return new HttpEntity<>(this.testReport.getContentAsByteArray());
+        return new HttpEntity<>(this.service.downloadReport(filter));
     }
 }
