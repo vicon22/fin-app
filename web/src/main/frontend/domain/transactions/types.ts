@@ -7,6 +7,7 @@ export type SummaryByType = Record<TransactionType, number | undefined>;
 export type SummaryByState = Record<TransactionState, number | undefined>;
 export type SummaryByCategory = Record<string, Record<TransactionType, number | undefined> | undefined>;
 export type SummaryByBank = Record<string, Record<string, number | undefined> | undefined>;
+export type SummaryByTime = Record<string, number | undefined>;
 
 
 export enum TransactionFilterCompareMode {
