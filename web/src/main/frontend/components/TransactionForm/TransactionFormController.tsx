@@ -25,7 +25,7 @@ type TransactionFormControllerProps = {
 
 
 const telMaxDigits = 10;
-const tinMaxDigits = 12;
+const tinMaxDigits = 11;
 
 export const TransactionFormController = memo<TransactionFormControllerProps>(function TransactionFormController(props: TransactionFormControllerProps) {
     const initialSet = useSignal<boolean>(false);
