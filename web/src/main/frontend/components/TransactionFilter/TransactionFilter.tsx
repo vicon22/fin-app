@@ -75,7 +75,6 @@ export function TransactionFilter(props: TransactionFilterProps) {
                         />
                     </HorizontalLayout>
 
-
                     <HorizontalLayout theme='spacing' className={st.unit}>
                         <NumberField
                             className={st.field}

@@ -10,15 +10,29 @@ import io.scrooge.data.transaction.TransactionType;
 import io.scrooge.data.transaction.dto.FlowCategoryCurrencySum;
 import io.scrooge.data.transaction.dto.FlowCategorySum;
 import io.scrooge.data.transaction.dto.TransactionDTO;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.*;
+import org.springframework.util.ResourceUtils;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.*;
 
 @Endpoint
 @AnonymousAllowed
 public class TransactionEndpoint {
+
+    @Value("classpath:test.xlsx")
+    Resource testReport;
 
     @Autowired
     private TransactionService service;
@@ -105,5 +119,9 @@ public class TransactionEndpoint {
         this.service.save(current);
 
         return current;
+    }
+
+    public HttpEntity<byte[]> downloadReport(Filter filter) throws IOException {
+        return new HttpEntity<>(this.testReport.getContentAsByteArray());
     }
 }

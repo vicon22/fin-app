@@ -1,4 +1,4 @@
-import {HorizontalLayout, VerticalLayout, Button, Icon} from '@vaadin/react-components';
+import {HorizontalLayout, VerticalLayout, Button, Icon, Tooltip} from '@vaadin/react-components';
 import {AutoGrid, AutoGridRef} from '@vaadin/hilla-react-crud';
 import Project from 'Frontend/generated/io/scrooge/data/project/Project';
 import {formatAmount} from 'Frontend/util/currency';
@@ -46,15 +46,36 @@ export function TransactionList(props: TransactionListProps) {
                                 onCreate={props.onCreate}
                             />
 
-                            {needFilter && (
-                                <TransactionFilter
-                                    filter={props.filter}
-                                    criterions={props.criterions}
-                                    settings={props.settings}
-                                    categories={props.categories}
-                                    banks={payload.data.banks}
-                                />
-                            )}
+                            <HorizontalLayout theme='spacing'>
+                                {needFilter && (
+                                    <TransactionFilter
+                                        filter={props.filter}
+                                        criterions={props.criterions}
+                                        settings={props.settings}
+                                        categories={props.categories}
+                                        banks={payload.data.banks}
+                                    />
+                                )}
+                                <Button
+                                    theme='icon'
+                                    onClick={() => {
+                                        TransactionEndpoint.downloadReport(props.filter.value)
+                                            .then(resp => {
+                                                const link: HTMLAnchorElement = document.createElement('a');
+                                                const blob = new Blob([new Uint8Array(resp?.body || [])], {
+                                                    type: 'application/vnd.ms-excel'
+                                                });
+
+                                                link.href = URL.createObjectURL(blob);
+                                                link.download = 'report.xlsx';
+                                                link.click();
+                                            });
+                                    }}
+                                >
+                                    <Icon icon='vaadin:download'/>
+                                    <Tooltip slot='tooltip' text='Скачать отчет' />
+                                </Button>
+                            </HorizontalLayout>
                         </VerticalLayout>
                     )
                 }}

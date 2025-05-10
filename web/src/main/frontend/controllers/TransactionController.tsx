@@ -63,8 +63,6 @@ export default function TransactionController(props: TransactionControllerProps)
             })
     }, [projectId]);
 
-    console.log({transaction})
-
     return (
         props.children({
             error,

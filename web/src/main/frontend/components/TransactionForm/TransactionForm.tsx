@@ -28,7 +28,7 @@ type TransactionFormProps = {
 };
 
 const telMaxDigits = 10;
-const tinMaxDigits = 12;
+const tinMaxDigits = 11;
 
 export default function TransactionForm(props: TransactionFormProps) {
     const { model, field} = props.form
