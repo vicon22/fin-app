@@ -3,28 +3,17 @@ package io.scrooge.services.transaction;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.hilla.Endpoint;
 import com.vaadin.hilla.crud.filter.Filter;
-import io.scrooge.data.transaction.Transaction;
-import io.scrooge.data.transaction.TransactionRepository;
-import io.scrooge.data.transaction.TransactionState;
-import io.scrooge.data.transaction.TransactionType;
+import io.scrooge.data.transaction.*;
 import io.scrooge.data.transaction.dto.FlowCategoryCurrencySum;
 import io.scrooge.data.transaction.dto.FlowCategorySum;
 import io.scrooge.data.transaction.dto.TransactionDTO;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
-import org.springframework.util.ResourceUtils;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.*;
 
 @Endpoint
@@ -103,6 +92,18 @@ public class TransactionEndpoint {
 
     public Map<TransactionType, Long> getSummaryByType(Filter filter) {
         return this.service.getSummaryByType(filter);
+    }
+
+    public Map<TransactionTime, Long> getSummaryByTime(Filter filter) {
+        return this.service.getSummaryByTime(filter, null);
+    }
+
+    public Map<TransactionTime, Long> getSummaryIncomeByTime(Filter filter) {
+        return this.service.getSummaryByTime(filter, TransactionType.INCOME);
+    }
+
+    public Map<TransactionTime, Long> getSummaryExpenseByTime(Filter filter) {
+        return this.service.getSummaryByTime(filter, TransactionType.EXPENSE);
     }
 
     public Map<TransactionState, Integer> getSummaryByState(Filter filter) {
