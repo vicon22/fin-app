@@ -23,6 +23,8 @@ type ProjectSummaryControllerProps = {
             byCategory: SummaryByCategory;
             byBank: SummaryByBank;
             byTime: SummaryByTime;
+            byTimeIncome: SummaryByTime;
+            byTimeExpense: SummaryByTime;
         }
     }) => ReactNode;
 };
@@ -54,6 +56,10 @@ export default function ProjectSummaryController(props: ProjectSummaryController
     const [byBank, setByBank] = useState<SummaryByBank>({});
     
     const [byTime, setByTime] = useState<SummaryByTime>({});
+    
+    const [byTimeIncome, setByTimeIncome] = useState<SummaryByTime>({});
+    
+    const [byTimeExpense, setByTimeExpense] = useState<SummaryByTime>({});
 
     const fetchSummaryByType = useCallback(() => {
         return TransactionEndpoint.getSummaryByType(props.filter.value)
@@ -109,6 +115,34 @@ export default function ProjectSummaryController(props: ProjectSummaryController
             return Promise.resolve();
         }
     }, [props.filter.value]);
+    
+    const fetchSummaryIncomeByTime = useCallback(() => {
+        if (typeof TransactionEndpoint.getSummaryIncomeByTime === 'function') {
+            return TransactionEndpoint.getSummaryIncomeByTime(props.filter.value)
+                .then((resp) => {
+                    if (resp) {
+                        setByTimeIncome(resp);
+                    }
+                });
+        } else {
+            console.warn('getSummaryIncomeByTime method not available');
+            return Promise.resolve();
+        }
+    }, [props.filter.value]);
+    
+    const fetchSummaryExpenseByTime = useCallback(() => {
+        if (typeof TransactionEndpoint.getSummaryExpenseByTime === 'function') {
+            return TransactionEndpoint.getSummaryExpenseByTime(props.filter.value)
+                .then((resp) => {
+                    if (resp) {
+                        setByTimeExpense(resp);
+                    }
+                });
+        } else {
+            console.warn('getSummaryExpenseByTime method not available');
+            return Promise.resolve();
+        }
+    }, [props.filter.value]);
 
     const fetch = useCallback(() => {
         return Promise
@@ -117,7 +151,9 @@ export default function ProjectSummaryController(props: ProjectSummaryController
                 fetchSummaryByState(),
                 fetchSummaryByCategory(),
                 fetchSummaryByBank(),
-                fetchSummaryByTime()
+                fetchSummaryByTime(),
+                fetchSummaryIncomeByTime(),
+                fetchSummaryExpenseByTime()
             ])
             .catch(() => {
                 setError(true);
@@ -125,7 +161,7 @@ export default function ProjectSummaryController(props: ProjectSummaryController
             .finally(() => {
                 setPending(false)
             })
-    }, [fetchSummaryByType, fetchSummaryByState, fetchSummaryByCategory, fetchSummaryByBank, fetchSummaryByTime])
+    }, [fetchSummaryByType, fetchSummaryByState, fetchSummaryByCategory, fetchSummaryByBank, fetchSummaryByTime, fetchSummaryIncomeByTime, fetchSummaryExpenseByTime])
 
     useEffect(() => {
         fetch()
@@ -145,7 +181,9 @@ export default function ProjectSummaryController(props: ProjectSummaryController
                 byState,
                 byCategory,
                 byBank,
-                byTime
+                byTime,
+                byTimeIncome,
+                byTimeExpense
             }
         })
     );
