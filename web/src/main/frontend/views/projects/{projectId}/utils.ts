@@ -9,8 +9,8 @@ export function getSummaryByTypeChartData(input: SummaryByType) {
         labels: ['Доходы', 'Расходы'],
         datasets: [{
             data: [
-                input[TransactionType.INCOME],
-                input[TransactionType.EXPENSE]
+                (input[TransactionType.INCOME] || 0) / 100,
+                (input[TransactionType.EXPENSE] || 0) / 100
             ],
             backgroundColor: [
                 'hsla(145, 72%, 31%, 0.5)',
