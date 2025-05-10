@@ -7,7 +7,7 @@ import Transaction from 'Frontend/generated/io/scrooge/data/transaction/Transact
 import {useAuth} from 'Frontend/util/auth';
 import AndFilter from 'Frontend/generated/com/vaadin/hilla/crud/filter/AndFilter';
 import TransactionType from 'Frontend/generated/io/scrooge/data/transaction/TransactionType';
-import {SummaryByBank, SummaryByCategory, SummaryByState, SummaryByType} from 'Frontend/domain/transactions/types';
+import {SummaryByBank, SummaryByCategory, SummaryByState, SummaryByTime, SummaryByType} from 'Frontend/domain/transactions/types';
 import TransactionState from 'Frontend/generated/io/scrooge/data/transaction/TransactionState';
 import { ReadonlySignal } from '@vaadin/hilla-react-signals';
 
@@ -22,6 +22,7 @@ type ProjectSummaryControllerProps = {
             byState: SummaryByState;
             byCategory: SummaryByCategory;
             byBank: SummaryByBank;
+            byTime: SummaryByTime;
         }
     }) => ReactNode;
 };
@@ -51,6 +52,8 @@ export default function ProjectSummaryController(props: ProjectSummaryController
     const [byCategory, setByCategory] = useState<SummaryByCategory>({});
 
     const [byBank, setByBank] = useState<SummaryByBank>({});
+    
+    const [byTime, setByTime] = useState<SummaryByTime>({});
 
     const fetchSummaryByType = useCallback(() => {
         return TransactionEndpoint.getSummaryByType(props.filter.value)
@@ -92,6 +95,20 @@ export default function ProjectSummaryController(props: ProjectSummaryController
             return Promise.resolve();
         }
     }, [props.filter.value]);
+    
+    const fetchSummaryByTime = useCallback(() => {
+        if (typeof TransactionEndpoint.getSummaryByTime === 'function') {
+            return TransactionEndpoint.getSummaryByTime(props.filter.value)
+                .then((resp) => {
+                    if (resp) {
+                        setByTime(resp);
+                    }
+                });
+        } else {
+            console.warn('getSummaryByTime method not available');
+            return Promise.resolve();
+        }
+    }, [props.filter.value]);
 
     const fetch = useCallback(() => {
         return Promise
@@ -99,7 +116,8 @@ export default function ProjectSummaryController(props: ProjectSummaryController
                 fetchSummaryByType(),
                 fetchSummaryByState(),
                 fetchSummaryByCategory(),
-                fetchSummaryByBank()
+                fetchSummaryByBank(),
+                fetchSummaryByTime()
             ])
             .catch(() => {
                 setError(true);
@@ -107,7 +125,7 @@ export default function ProjectSummaryController(props: ProjectSummaryController
             .finally(() => {
                 setPending(false)
             })
-    }, [fetchSummaryByType, fetchSummaryByState, fetchSummaryByCategory, fetchSummaryByBank])
+    }, [fetchSummaryByType, fetchSummaryByState, fetchSummaryByCategory, fetchSummaryByBank, fetchSummaryByTime])
 
     useEffect(() => {
         fetch()
@@ -126,7 +144,8 @@ export default function ProjectSummaryController(props: ProjectSummaryController
                 byType,
                 byState,
                 byCategory,
-                byBank
+                byBank,
+                byTime
             }
         })
     );
