@@ -145,7 +145,7 @@ export function getSummaryByTimeChartData(input: Record<string, number | undefin
         datasets: [{
             data: orderedKeys.map(key => input[key] || 0),
             backgroundColor: orderedKeys.map(key => timeColors[key as keyof typeof timeColors]),
-            barPercentage: 0.7,
+            barPercentage: 0.5,
             categoryPercentage: 0.8,
             borderRadius: 3
         }],
