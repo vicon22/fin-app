@@ -21,7 +21,7 @@ export const TransactionFilterController = memo(function TransactionFilterContro
     const nameFilterValue = useSignal('');
     const tinFilterValue = useSignal('');
 
-    const dateStart = useSignal(format(subDays(new Date(), 30), 'yyyy-MM-dd'));
+    const dateStart = useSignal('1900-01-01');
     const dateEnd = useSignal(format(new Date(), 'yyyy-MM-dd'));
 
     const amountStart = useSignal(0);
