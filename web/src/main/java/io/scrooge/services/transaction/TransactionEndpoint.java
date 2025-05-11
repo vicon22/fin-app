@@ -54,7 +54,7 @@ public class TransactionEndpoint {
 
         entity.setCategory_id(payload.getCategory_id());
         entity.setType(payload.getType());
-        entity.setState(TransactionState.INITIAL);
+        entity.setState(payload.getState() != null ? payload.getState() : TransactionState.INITIAL);
         entity.setLegal(payload.getLegal());
 
         entity.setConsumer_account(payload.getConsumer_account());
