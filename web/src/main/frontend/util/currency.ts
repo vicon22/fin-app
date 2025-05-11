@@ -1,4 +1,4 @@
-import Currency from "Frontend/generated/io/scrooge/data/currency/Currency";
+import Currency from 'Frontend/generated/io/scrooge/data/currency/Currency';
 
 enum Currencies {
     RUB = 'RUB',

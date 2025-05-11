@@ -1,7 +1,7 @@
-import { ReadonlySignal, Signal } from "@vaadin/hilla-react-signals";
-import AndFilter from "Frontend/generated/com/vaadin/hilla/crud/filter/AndFilter";
-import TransactionState from "Frontend/generated/io/scrooge/data/transaction/TransactionState";
-import TransactionType from "Frontend/generated/io/scrooge/data/transaction/TransactionType";
+import { ReadonlySignal, Signal } from '@vaadin/hilla-react-signals';
+import AndFilter from 'Frontend/generated/com/vaadin/hilla/crud/filter/AndFilter';
+import TransactionState from 'Frontend/generated/io/scrooge/data/transaction/TransactionState';
+import TransactionType from 'Frontend/generated/io/scrooge/data/transaction/TransactionType';
 
 export type SummaryByType = Record<TransactionType, number | undefined>;
 export type SummaryByState = Record<TransactionState, number | undefined>;

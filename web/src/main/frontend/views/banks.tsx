@@ -35,7 +35,7 @@ export default function BanksView() {
         <VerticalLayout className={st.layout} theme='spacing padding'>
             <TextField
                 className={st.search} 
-                label="Поиск по названию"
+                label='Поиск по названию'
                 value={nameFilterValue.value}
                 onValueChanged={(e) => {
                     nameFilterValue.value = e.detail.value;

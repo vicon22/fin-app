@@ -1,11 +1,11 @@
-import { useComputed, useSignal } from "@vaadin/hilla-react-signals";
-import { format,  subDays, addDays } from "date-fns";
-import { TransactionFilterCompareMode, TransactionFilterContext } from "Frontend/domain/transactions/types";
-import AndFilter from "Frontend/generated/com/vaadin/hilla/crud/filter/AndFilter";
-import PropertyStringFilter from "Frontend/generated/com/vaadin/hilla/crud/filter/PropertyStringFilter";
-import Matcher from "Frontend/generated/com/vaadin/hilla/crud/filter/PropertyStringFilter/Matcher";
-import { memo, ReactNode } from "react";
-import { useParams } from "react-router";
+import { useComputed, useSignal } from '@vaadin/hilla-react-signals';
+import { format,  subDays, } from 'date-fns';
+import { TransactionFilterCompareMode, TransactionFilterContext } from 'Frontend/domain/transactions/types';
+import AndFilter from 'Frontend/generated/com/vaadin/hilla/crud/filter/AndFilter';
+import PropertyStringFilter from 'Frontend/generated/com/vaadin/hilla/crud/filter/PropertyStringFilter';
+import Matcher from 'Frontend/generated/com/vaadin/hilla/crud/filter/PropertyStringFilter/Matcher';
+import { memo, ReactNode } from 'react';
+import { useParams } from 'react-router';
 
 type TransactionFilterController = {
     children: (payload: TransactionFilterContext) => ReactNode;
@@ -21,8 +21,8 @@ export const TransactionFilterController = memo(function TransactionFilterContro
     const nameFilterValue = useSignal('');
     const tinFilterValue = useSignal('');
 
-    const dateStart = useSignal(format(subDays(new Date(), 10), 'yyyy-MM-dd'));
-    const dateEnd = useSignal(format(addDays(new Date(), 10), 'yyyy-MM-dd'));
+    const dateStart = useSignal(format(subDays(new Date(), 30), 'yyyy-MM-dd'));
+    const dateEnd = useSignal(format(new Date(), 'yyyy-MM-dd'));
 
     const amountStart = useSignal(0);
     const amountEnd = useSignal(99999999);

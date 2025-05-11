@@ -48,13 +48,13 @@ public class TransactionServiceTest {
 
         for (int i = 0; i < 10; i++) {
             Transaction transaction = new Transaction();
-            
+
             transaction.setAmount(1000L + i * 100);
             transaction.setCategory_id(categoryId);
-            
+
             TransactionType type = (i % 2 == 0) ? TransactionType.INCOME : TransactionType.EXPENSE;
             transaction.setType(type);
-            
+
             TransactionState state;
             if (i < 3) {
                 state = TransactionState.INITIAL;
@@ -66,15 +66,15 @@ public class TransactionServiceTest {
                 state = TransactionState.APPROVED;
             }
             transaction.setState(state);
-            
+
             UUID producerBankId = (i % 2 == 0) ? bankId1 : bankId2;
             transaction.setProducer_bank_id(producerBankId);
-            
+
             if (i < 5) {
                 UUID consumerBankId = (i % 2 == 0) ? bankId2 : bankId1;
                 transaction.setConsumer_bank_id(consumerBankId);
             }
-            
+
             LocalDate createdDate;
             if (i < 2) {
                 createdDate = LocalDate.now().minusDays(3);
@@ -86,7 +86,7 @@ public class TransactionServiceTest {
                 createdDate = LocalDate.now().minusMonths(6);
             }
             transaction.setCreated(createdDate);
-            
+
             mockTransactions.add(transaction);
         }
     }
@@ -120,10 +120,10 @@ public class TransactionServiceTest {
         assertEquals(2, result.size());
         assertTrue(result.containsKey(TransactionType.INCOME));
         assertTrue(result.containsKey(TransactionType.EXPENSE));
-        
+
         long expectedIncome = 0;
         long expectedExpense = 0;
-        
+
         for (Transaction t : mockTransactions) {
             if (t.getType() == TransactionType.INCOME) {
                 expectedIncome += t.getAmount();
@@ -131,10 +131,10 @@ public class TransactionServiceTest {
                 expectedExpense += t.getAmount();
             }
         }
-        
+
         assertEquals(expectedIncome, result.get(TransactionType.INCOME));
         assertEquals(expectedExpense, result.get(TransactionType.EXPENSE));
-        
+
         verify(repository).findAll(any(Specification.class));
     }
 
@@ -149,7 +149,7 @@ public class TransactionServiceTest {
         assertEquals(2, result.get(TransactionState.PENDING));
         assertEquals(2, result.get(TransactionState.FULFILLED));
         assertEquals(3, result.get(TransactionState.APPROVED));
-        
+
         verify(repository).findAll(any(Specification.class));
     }
 
@@ -161,13 +161,13 @@ public class TransactionServiceTest {
 
         assertEquals(1, result.size());
         assertTrue(result.containsKey(categoryId));
-        
+
         HashMap<TransactionType, Long> categoryData = result.get(categoryId);
         assertEquals(2, categoryData.size());
-        
+
         long expectedIncome = 0;
         long expectedExpense = 0;
-        
+
         for (Transaction t : mockTransactions) {
             if (t.getType() == TransactionType.INCOME) {
                 expectedIncome += t.getAmount();
@@ -175,10 +175,10 @@ public class TransactionServiceTest {
                 expectedExpense += t.getAmount();
             }
         }
-        
+
         assertEquals(expectedIncome, categoryData.get(TransactionType.INCOME));
         assertEquals(expectedExpense, categoryData.get(TransactionType.EXPENSE));
-        
+
         verify(repository).findAll(any(Specification.class));
     }
 
@@ -189,37 +189,37 @@ public class TransactionServiceTest {
         Map<TransactionTime, Long> result = transactionService.getSummaryByTime(null, null);
 
         assertEquals(4, result.size());
-        
+
         LocalDate oneWeekAgo = LocalDate.now().minusWeeks(1);
         LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
         LocalDate oneQuarterAgo = LocalDate.now().minusMonths(3);
-        
+
         long weekCount = mockTransactions.stream().filter(t -> t.getCreated().isAfter(oneWeekAgo)).count();
         long monthCount = mockTransactions.stream().filter(t -> t.getCreated().isAfter(oneMonthAgo)).count();
         long quarterCount = mockTransactions.stream().filter(t -> t.getCreated().isAfter(oneQuarterAgo)).count();
-        
+
         assertEquals(weekCount, result.get(TransactionTime.WEEK));
         assertEquals(monthCount, result.get(TransactionTime.MONTH));
         assertEquals(quarterCount, result.get(TransactionTime.QUARTER));
-        assertEquals((long)mockTransactions.size(), result.get(TransactionTime.YEAR));
-        
+        assertEquals(mockTransactions.size(), result.get(TransactionTime.YEAR));
+
         verify(repository).findAll(any(Specification.class));
-        
+
         when(repository.findAll(any(Specification.class))).thenReturn(mockTransactions);
         Map<TransactionTime, Long> incomeResult = transactionService.getSummaryByTime(null, TransactionType.INCOME);
-        
+
         List<Transaction> incomeTransactions = mockTransactions.stream()
-            .filter(t -> t.getType() == TransactionType.INCOME)
-            .toList();
-        
+                .filter(t -> t.getType() == TransactionType.INCOME)
+                .toList();
+
         long incomeWeekCount = incomeTransactions.stream().filter(t -> t.getCreated().isAfter(oneWeekAgo)).count();
         long incomeMonthCount = incomeTransactions.stream().filter(t -> t.getCreated().isAfter(oneMonthAgo)).count();
         long incomeQuarterCount = incomeTransactions.stream().filter(t -> t.getCreated().isAfter(oneQuarterAgo)).count();
-        
+
         assertEquals(incomeWeekCount, incomeResult.get(TransactionTime.WEEK));
         assertEquals(incomeMonthCount, incomeResult.get(TransactionTime.MONTH));
         assertEquals(incomeQuarterCount, incomeResult.get(TransactionTime.QUARTER));
-        assertEquals((long)incomeTransactions.size(), incomeResult.get(TransactionTime.YEAR));
+        assertEquals(incomeTransactions.size(), incomeResult.get(TransactionTime.YEAR));
     }
 
     @Test
@@ -230,7 +230,7 @@ public class TransactionServiceTest {
             Bank producerBank = mock(Bank.class);
             when(producerBank.getId()).thenReturn(transaction.getProducer_bank_id());
             transaction.setProducer_bank(producerBank);
-            
+
             if (transaction.getConsumer_bank_id() != null) {
                 Bank consumerBank = mock(Bank.class);
                 when(consumerBank.getId()).thenReturn(transaction.getConsumer_bank_id());
@@ -243,12 +243,12 @@ public class TransactionServiceTest {
         assertEquals(2, result.size());
         assertTrue(result.containsKey(bankId1));
         assertTrue(result.containsKey(bankId2));
-        
+
         long bank1ProducerSum = 0;
         long bank1ConsumerSum = 0;
         long bank2ProducerSum = 0;
         long bank2ConsumerSum = 0;
-        
+
         for (Transaction t : mockTransactions) {
             if (bankId1.equals(t.getProducer_bank_id())) {
                 bank1ProducerSum += t.getAmount();
@@ -263,15 +263,15 @@ public class TransactionServiceTest {
                 bank2ConsumerSum += t.getAmount();
             }
         }
-        
+
         Map<String, Long> bank1Data = result.get(bankId1);
         Map<String, Long> bank2Data = result.get(bankId2);
-        
+
         assertEquals(bank1ProducerSum, bank1Data.get("producer"));
         assertEquals(bank1ConsumerSum, bank1Data.get("consumer"));
         assertEquals(bank2ProducerSum, bank2Data.get("producer"));
         assertEquals(bank2ConsumerSum, bank2Data.get("consumer"));
-        
+
         verify(repository).findAll(any(Specification.class));
     }
 
@@ -284,16 +284,16 @@ public class TransactionServiceTest {
         LocalDate oneWeekAgo = LocalDate.now().minusWeeks(1);
         LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
         LocalDate oneQuarterAgo = LocalDate.now().minusMonths(3);
-        
+
         List<Transaction> filteredTransactions = mockTransactions.subList(0, 5);
         long weekCount = filteredTransactions.stream().filter(t -> t.getCreated().isAfter(oneWeekAgo)).count();
         long monthCount = filteredTransactions.stream().filter(t -> t.getCreated().isAfter(oneMonthAgo)).count();
         long quarterCount = filteredTransactions.stream().filter(t -> t.getCreated().isAfter(oneQuarterAgo)).count();
-        
+
         assertEquals(weekCount, result.get(TransactionTime.WEEK));
         assertEquals(monthCount, result.get(TransactionTime.MONTH));
         assertEquals(quarterCount, result.get(TransactionTime.QUARTER));
-        assertEquals((long)filteredTransactions.size(), result.get(TransactionTime.YEAR));
+        assertEquals(filteredTransactions.size(), result.get(TransactionTime.YEAR));
     }
 
     @Test
@@ -307,7 +307,7 @@ public class TransactionServiceTest {
             transaction = spy(transaction);
             when(transaction.getId()).thenReturn(UUID.randomUUID());
         }
-        
+
         transaction.setAmount(1000L);
         transaction.setTitle("Test Transaction");
         transaction.setDetails("Test Details");
@@ -315,16 +315,16 @@ public class TransactionServiceTest {
         transaction.setType(TransactionType.INCOME);
         transaction.setLegal(TransactionLegal.LEGAL);
         transaction.setCreated(LocalDate.now());
-        
+
         Bank bank = mock(Bank.class);
         when(bank.getName()).thenReturn("Test Bank");
 
         TransactionCategory category = mock(TransactionCategory.class);
         when(category.getTitle()).thenReturn("Test Category");
-        
+
         transaction.setCategory(category);
         transaction.setProducer_bank(bank);
-        
+
         List<Transaction> reportTransactions = Collections.singletonList(transaction);
         when(repository.findAll(any(Specification.class))).thenReturn(reportTransactions);
 

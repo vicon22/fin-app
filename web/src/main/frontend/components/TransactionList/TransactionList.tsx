@@ -114,8 +114,8 @@ export function TransactionList(props: TransactionListProps) {
                                     return (
                                         <HorizontalLayout className={st.name}>
                                             <Button
-                                                theme="icon small secondary error"
-                                                aria-label="Удалить"
+                                                theme='icon small secondary error'
+                                                aria-label='Удалить'
                                                 disabled={!ediatable}
                                                 onClick={() => {
                                                     TransactionEndpoint.markDeleted(item.id).then(() => {
@@ -123,7 +123,7 @@ export function TransactionList(props: TransactionListProps) {
                                                     })
                                                 }}
                                             >
-                                                <Icon icon="vaadin:close-small" />
+                                                <Icon icon='vaadin:close-small' />
                                             </Button>
                                             <NavLink
                                                 to={`/projects/${props.project?.id}/transaction/${item.id}`}
@@ -164,7 +164,7 @@ export function TransactionList(props: TransactionListProps) {
                             legal : {
                                 header: 'Тип лица',
                                 renderer: ({ item }: { item: Transaction }) => {
-                                    return item.legal === TransactionLegal.LEGAL ? "Юр." : "Физ."
+                                    return item.legal === TransactionLegal.LEGAL ? 'Юр.' : 'Физ.'
                                 }
                             },
                             amount: {

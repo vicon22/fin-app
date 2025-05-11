@@ -1,14 +1,14 @@
-import { NotEmpty, Positive, Size } from "@vaadin/hilla-lit-form";
-import { useForm, useFormPart, UseFormResult } from "@vaadin/hilla-react-form";
-import { useSignal } from "@vaadin/hilla-react-signals";
-import { SelectItem } from "@vaadin/react-components";
-import Bank from "Frontend/generated/io/scrooge/data/bank/Bank";
-import TransactionDTO from "Frontend/generated/io/scrooge/data/transaction/dto/TransactionDTO";
-import TransactionDTOModel from "Frontend/generated/io/scrooge/data/transaction/dto/TransactionDTOModel";
-import Transaction from "Frontend/generated/io/scrooge/data/transaction/Transaction";
-import TransactionLegal from "Frontend/generated/io/scrooge/data/transaction/TransactionLegal";
-import TransactionType from "Frontend/generated/io/scrooge/data/transaction/TransactionType";
-import { memo, ReactNode, useEffect, useMemo } from "react";
+import { NotEmpty, Positive, Size } from '@vaadin/hilla-lit-form';
+import { useForm, useFormPart, UseFormResult } from '@vaadin/hilla-react-form';
+import { useSignal } from '@vaadin/hilla-react-signals';
+import { SelectItem } from '@vaadin/react-components';
+import Bank from 'Frontend/generated/io/scrooge/data/bank/Bank';
+import TransactionDTO from 'Frontend/generated/io/scrooge/data/transaction/dto/TransactionDTO';
+import TransactionDTOModel from 'Frontend/generated/io/scrooge/data/transaction/dto/TransactionDTOModel';
+import Transaction from 'Frontend/generated/io/scrooge/data/transaction/Transaction';
+import TransactionLegal from 'Frontend/generated/io/scrooge/data/transaction/TransactionLegal';
+import TransactionType from 'Frontend/generated/io/scrooge/data/transaction/TransactionType';
+import { memo, ReactNode, useEffect, useMemo } from 'react';
 
 type TransactionFormControllerProps = {
     projectId: string | undefined;
@@ -94,7 +94,7 @@ export const TransactionFormController = memo<TransactionFormControllerProps>(fu
                 legal: TransactionLegal.PHYSICAL,
                 ...props.initialValue
             });
-            
+
             initialSet.value = true;
         }
     }, [props.banks, initialSet.value])

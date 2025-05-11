@@ -1,13 +1,13 @@
-import TransactionForm from "Frontend/components/TransactionForm/TransactionForm";
-import { TransactionFormController } from "Frontend/components/TransactionForm/TransactionFormController";
-import TransactionController from "Frontend/controllers/TransactionController";
+import TransactionForm from 'Frontend/components/TransactionForm/TransactionForm';
+import { TransactionFormController } from 'Frontend/components/TransactionForm/TransactionFormController';
+import TransactionController from 'Frontend/controllers/TransactionController';
 import st from './transaction.module.css'
-import { Button, VerticalLayout } from "@vaadin/react-components";
-import { TransactionEndpoint } from "Frontend/generated/endpoints";
-import { useNavigate } from "react-router";
-import { STATE_PARAMS } from "Frontend/domain/transactions/constants";
-import TransactionState from "Frontend/generated/io/scrooge/data/transaction/TransactionState";
-import { ViewConfig } from "@vaadin/hilla-file-router/types.js";
+import { Button, VerticalLayout } from '@vaadin/react-components';
+import { TransactionEndpoint } from 'Frontend/generated/endpoints';
+import { useNavigate } from 'react-router';
+import { STATE_PARAMS } from 'Frontend/domain/transactions/constants';
+import TransactionState from 'Frontend/generated/io/scrooge/data/transaction/TransactionState';
+import { ViewConfig } from '@vaadin/hilla-file-router/types.js';
 
 export const config: ViewConfig = {
   loginRequired: true,
@@ -55,7 +55,7 @@ export default function TransactionView() {
                             initialValue={data.transaction}
                         >
                             {({form, banksOptions}) => (
-                                <VerticalLayout theme="spacing">
+                                <VerticalLayout theme='spacing'>
                                     <h2>{data.transaction?.title}</h2>
                                     <TransactionForm
                                         mode='edit'

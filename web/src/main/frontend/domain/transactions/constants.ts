@@ -1,4 +1,4 @@
-import TransactionState from "Frontend/generated/io/scrooge/data/transaction/TransactionState";
+import TransactionState from 'Frontend/generated/io/scrooge/data/transaction/TransactionState';
 
 export const STATE_PARAMS = {
     [TransactionState.INITIAL]: { 

@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @BrowserCallable
 @Service
@@ -61,11 +60,11 @@ public class TransactionService extends CrudRepositoryService<Transaction, UUID,
         var result = new HashMap<TransactionType, Long>();
 
         for (var item : items) {
-            var elem = (Transaction)item;
+            var elem = (Transaction) item;
             var type = elem.getType();
 
             if (!result.containsKey(type)) {
-                result.put(type, 0l);
+                result.put(type, 0L);
             }
 
             result.put(type, result.get(type) + elem.getAmount());
@@ -79,7 +78,7 @@ public class TransactionService extends CrudRepositoryService<Transaction, UUID,
         var result = new HashMap<TransactionState, Integer>();
 
         for (var item : items) {
-            var elem = (Transaction)item;
+            var elem = (Transaction) item;
             var state = elem.getState();
 
             if (!result.containsKey(state)) {
@@ -97,14 +96,14 @@ public class TransactionService extends CrudRepositoryService<Transaction, UUID,
         var result = new HashMap<UUID, HashMap<TransactionType, Long>>();
 
         for (var item : items) {
-            var elem = (Transaction)item;
+            var elem = (Transaction) item;
             var catId = elem.getCategory_id();
             var type = elem.getType();
 
             if (!result.containsKey(catId)) {
                 result.put(catId, new HashMap<>() {{
-                    put(TransactionType.EXPENSE, 0l);
-                    put(TransactionType.INCOME, 0l);
+                    put(TransactionType.EXPENSE, 0L);
+                    put(TransactionType.INCOME, 0L);
                 }});
             }
 
@@ -145,7 +144,7 @@ public class TransactionService extends CrudRepositoryService<Transaction, UUID,
         var result = new HashMap<UUID, Map<String, Long>>();
 
         for (var item : items) {
-            var elem = (Transaction)item;
+            var elem = (Transaction) item;
 
             if (elem.getProducer_bank() != null) {
                 var bankId = elem.getProducer_bank_id();

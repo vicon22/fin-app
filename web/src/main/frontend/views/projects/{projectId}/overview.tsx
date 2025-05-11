@@ -94,8 +94,8 @@ export default function ProjectOverview() {
 
                             return (
                                 <>
-                                    <HorizontalLayout theme="padding spacing">
-                                        <VerticalLayout theme="padding spacing">
+                                    <HorizontalLayout theme='padding spacing'>
+                                        <VerticalLayout theme='padding spacing'>
                                             <h2>{data.project?.name}</h2>
                                             <span {...{ theme: ballance == 0 ? 'badge' : ballance < 0 ? 'badge error' : 'badge success' }}>
                                                 {formatAmount(ballance, data.project?.currency)}
@@ -119,9 +119,9 @@ export default function ProjectOverview() {
                                         <TabSheetTab label='Отчеты'>
                                             <ProjectSummaryController filter={filter}>
                                                 {(summary) => (
-                                                    <VerticalLayout theme="padding spacing">
+                                                    <VerticalLayout theme='padding spacing'>
 
-                                                        <HorizontalLayout theme="padding spacing">
+                                                        <HorizontalLayout theme='padding spacing'>
                                                             <div style={{ width: 400, height: 350}}>
                                                                 <h4 style={{lineHeight: 3}}>Итоговое распределение</h4>
                                                                 <Pie
@@ -277,13 +277,13 @@ function TransactionTypeSelector({summary}: {summary: any}) {
     return (
         <div>
             <RadioGroup 
-                label="Тип транзакций"
+                label='Тип транзакций'
                 value={selectedType}
                 onValueChanged={handleTypeChange as any}
-                theme="horizontal"
+                theme='horizontal'
             >
-                <RadioButton value="income" label="Доходы" />
-                <RadioButton value="expense" label="Расходы" />
+                <RadioButton value='income' label='Доходы' />
+                <RadioButton value='expense' label='Расходы' />
             </RadioGroup>
             
             {hasData && (

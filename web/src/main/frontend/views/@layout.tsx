@@ -26,23 +26,23 @@ export default function MainLayout() {
 
   const { state, logout } = useAuth();
   return (
-    <AppLayout primarySection="drawer">
-      <div slot="drawer" className="flex flex-col justify-between h-full p-m">
-        <header className="flex flex-col gap-m">
-          <span className="font-semibold text-l">Scrooge</span>
+    <AppLayout primarySection='drawer'>
+      <div slot='drawer' className='flex flex-col justify-between h-full p-m'>
+        <header className='flex flex-col gap-m'>
+          <span className='font-semibold text-l'>Scrooge</span>
           <SideNav onNavigate={({ path }) => navigate(path!)} location={location}>
             {createMenuItems().map(({ to, title, icon }) => (
               <SideNavItem path={to} key={to}>
-                {icon ? <Icon src={icon} slot="prefix"></Icon> : <></>}
+                {icon ? <Icon src={icon} slot='prefix'></Icon> : <></>}
                 {title}
               </SideNavItem>
             ))}
           </SideNav>
         </header>
-        <footer className="flex flex-col gap-s">
+        <footer className='flex flex-col gap-s'>
           {state.user ? (
             <>
-              <div className="flex items-center gap-s">
+              <div className='flex items-center gap-s'>
                 <Avatar name={state.user?.name} />
                 {state.user.name}
               </div>
@@ -56,13 +56,13 @@ export default function MainLayout() {
               </Button>
             </>
           ) : (
-            <Link to="/login">Sign in</Link>
+            <Link to='/login'>Sign in</Link>
           )}
         </footer>
       </div>
      
-      <DrawerToggle slot="navbar" aria-label="Menu toggle"></DrawerToggle>
-      <h1 slot="navbar" className="text-l m-0">
+      <DrawerToggle slot='navbar' aria-label='Menu toggle'></DrawerToggle>
+      <h1 slot='navbar' className='text-l m-0'>
         {documentTitleSignal}
       </h1>
 

@@ -49,7 +49,7 @@ public class ProjectEndpointTest {
             mockProject = spy(mockProject);
             when(mockProject.getId()).thenReturn(projectId);
         }
-        
+
         mockProject.setUser_id(userId);
         mockProject.setName("Test Project");
         mockProject.setCurrency_id(currencyId);

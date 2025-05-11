@@ -41,20 +41,20 @@ export default function TransactionForm(props: TransactionFormProps) {
             {isCreate && (
                 <RadioGroup
                     disabled={props.disabled}
-                    label="Тип транзакции"
+                    label='Тип транзакции'
                     {...field(model.type)}
                 >
                     <RadioButton
                         value={TransactionType.INCOME}
-                        label="Поступление"
+                        label='Поступление'
                     />
                     <RadioButton
                         value={TransactionType.EXPENSE}
-                        label="Расход"
+                        label='Расход'
                     />
                 </RadioGroup>
             )}
-            <HorizontalLayout theme="spacing" style={{ justifyContent: 'space-between' }}>
+            <HorizontalLayout theme='spacing' style={{ justifyContent: 'space-between' }}>
                 {isCreate ? 
                     (
                         <TextField
@@ -79,14 +79,14 @@ export default function TransactionForm(props: TransactionFormProps) {
                 }
                 <DatePicker
                     disabled={props.disabled}
-                    label="Дата операции"
+                    label='Дата операции'
                     max={(new Date()).toISOString()}
                     {...field(model.created)}
                     value={format(createdField.value ? new Date(createdField.value) : new Date(), 'yyyy-MM-dd')}
                 />
             </HorizontalLayout>
 
-            <HorizontalLayout theme="spacing" style={{ justifyContent: 'space-between' }}>
+            <HorizontalLayout theme='spacing' style={{ justifyContent: 'space-between' }}>
                 <Select
                     required
                     disabled={props.disabled}
@@ -108,11 +108,11 @@ export default function TransactionForm(props: TransactionFormProps) {
             <hr/>
             <h5 className={st.subtitle}>Отправитель</h5>
 
-            <HorizontalLayout theme="spacing" style={{ justifyContent: 'space-between' }}>
+            <HorizontalLayout theme='spacing' style={{ justifyContent: 'space-between' }}>
                 <Select
                     disabled={props.disabled}
                     style={{ flexGrow: 1 }}
-                    label="Банк"
+                    label='Банк'
                     items={props.banks}
                     {...field(model.producer_bank_id)}
                 />
@@ -132,24 +132,24 @@ export default function TransactionForm(props: TransactionFormProps) {
 
             <RadioGroup
                 disabled={props.disabled}
-                label="Тип лица"
+                label='Тип лица'
                 {...field(model.legal)}
             >
                 <RadioButton
                     value={TransactionLegal.LEGAL}
-                    label="Юридическое"
+                    label='Юридическое'
                 />
                 <RadioButton
                     value={TransactionLegal.PHYSICAL}
-                    label="Физическое"
+                    label='Физическое'
                 />
             </RadioGroup>
 
-            <HorizontalLayout theme="spacing" style={{ justifyContent: 'space-between' }}>
+            <HorizontalLayout theme='spacing' style={{ justifyContent: 'space-between' }}>
                 <Select
                     disabled={props.disabled}
                     style={{ flexGrow: 1 }}
-                    label="Банк"
+                    label='Банк'
                     items={props.banks}
                     {...field(model.consumer_bank_id)}
                 />
@@ -164,7 +164,7 @@ export default function TransactionForm(props: TransactionFormProps) {
                 )}
             </HorizontalLayout>
 
-            <HorizontalLayout theme="spacing" style={{ justifyContent: 'space-between' }}>
+            <HorizontalLayout theme='spacing' style={{ justifyContent: 'space-between' }}>
                 <TextField
                     disabled={props.disabled}
                     maxlength={tinMaxDigits}
@@ -184,7 +184,7 @@ export default function TransactionForm(props: TransactionFormProps) {
                     label='Телефон'
                     {...field(model.consumer_tel)}
                 >
-                    <div slot="prefix">+7</div>
+                    <div slot='prefix'>+7</div>
                 </TextField>
             </HorizontalLayout>
 

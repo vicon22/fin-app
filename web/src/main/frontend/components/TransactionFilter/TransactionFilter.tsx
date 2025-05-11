@@ -30,17 +30,17 @@ export function TransactionFilter(props: TransactionFilterProps) {
 
     return (
         <>
-            <Button id="show-notifications" aria-label="Notifications" theme="icon">
-                <Icon icon="vaadin:filter"/>
+            <Button id='show-notifications' aria-label='Notifications' theme='icon'>
+                <Icon icon='vaadin:filter'/>
             </Button>
 
             <Popover
-                for="show-notifications"
-                theme="arrow no-padding"
+                for='show-notifications'
+                theme='arrow no-padding'
                 modal
                 position='end-top'
-                contentWidth="500px"
-                accessibleNameRef="notifications-heading"
+                contentWidth='500px'
+                accessibleNameRef='notifications-heading'
             >
                 <VerticalLayout theme='spacing padding' className={st.filter}>
                     {/* <h5 className={st.subtitle}>Дата</h5> */}
@@ -59,7 +59,7 @@ export function TransactionFilter(props: TransactionFilterProps) {
                     <HorizontalLayout theme='spacing' className={st.unit}>
                         <DatePicker
                             className={st.field}
-                            label="Дата (от)"
+                            label='Дата (от)'
                             value={props.criterions.dateStart.value}
                             onChange={e => { 
                                 props.criterions.dateStart.value = e.target.value
@@ -67,7 +67,7 @@ export function TransactionFilter(props: TransactionFilterProps) {
                         />
                         <DatePicker
                             className={st.field}
-                            label="Дата (до)"
+                            label='Дата (до)'
                             value={props.criterions.dateEnd.value}
                             onChange={e => { 
                                 props.criterions.dateEnd.value = e.target.value
@@ -78,7 +78,7 @@ export function TransactionFilter(props: TransactionFilterProps) {
                     <HorizontalLayout theme='spacing' className={st.unit}>
                         <NumberField
                             className={st.field}
-                            label="Сумма (от)"
+                            label='Сумма (от)'
                             value={String(props.criterions.amountStart.value / 100)}
                             onChange={e => { 
                                 props.criterions.amountStart.value= +e.target.value * 100
@@ -86,7 +86,7 @@ export function TransactionFilter(props: TransactionFilterProps) {
                         />
                         <NumberField
                             className={st.field}
-                            label="Сумма (до)"
+                            label='Сумма (до)'
                             value={String(props.criterions.amountEnd.value / 100)}
                             onChange={e => { 
                                 props.criterions.amountEnd.value= +e.target.value * 100
@@ -96,7 +96,7 @@ export function TransactionFilter(props: TransactionFilterProps) {
 
                     <HorizontalLayout theme='spacing' className={st.unit}>
                         <Select
-                            label="Тип"
+                            label='Тип'
                             className={st.field}
                             items={[
                                 {
@@ -123,7 +123,7 @@ export function TransactionFilter(props: TransactionFilterProps) {
                     <HorizontalLayout theme='spacing' className={st.unit}>
                         <TextField
                             className={st.field}
-                            label="Название"
+                            label='Название'
                             value={props.criterions.name.value}
                             onValueChanged={(e) => {
                                 props.criterions.name.value = e.detail.value;
@@ -131,7 +131,7 @@ export function TransactionFilter(props: TransactionFilterProps) {
                         />
 
                         <TextField
-                            label="ИНН"
+                            label='ИНН'
                             className={st.field}
                             value={props.criterions.tin.value}
                             onValueChanged={(e) => {
@@ -142,7 +142,7 @@ export function TransactionFilter(props: TransactionFilterProps) {
             
                     <HorizontalLayout theme='spacing' className={st.unit}>
                         <Select
-                            label="Статус"
+                            label='Статус'
                             className={st.field}
                             items={[
                                 {
@@ -161,7 +161,7 @@ export function TransactionFilter(props: TransactionFilterProps) {
                         />
 
                         <Select
-                            label="Категория"
+                            label='Категория'
                             className={st.field}
                             items={[
                                 {
@@ -183,7 +183,7 @@ export function TransactionFilter(props: TransactionFilterProps) {
 
                     <HorizontalLayout theme='spacing' className={st.unit}>
                         <Select
-                            label="Банк получатель"
+                            label='Банк получатель'
                             className={st.field}
                             items={[
                                 {
@@ -199,7 +199,7 @@ export function TransactionFilter(props: TransactionFilterProps) {
                         />
 
                         <Select
-                            label="Банк отправитель"
+                            label='Банк отправитель'
                             className={st.field}
                             items={[
                                 {
