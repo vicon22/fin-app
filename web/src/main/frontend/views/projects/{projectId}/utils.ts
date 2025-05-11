@@ -122,3 +122,32 @@ export function getSummaryByBankChartData(input: SummaryByBank, banks: Bank[]) {
 
     return result;
 }
+
+export function getSummaryByTimeChartData(input: Record<string, number | undefined>) {
+    const timeLabels = {
+        'WEEK': 'Неделя',
+        'MONTH': 'Месяц',
+        'QUARTER': 'Квартал',
+        'YEAR': 'Год'
+    };
+
+    const orderedKeys = ['WEEK', 'MONTH', 'QUARTER', 'YEAR'];
+
+    const timeColors = {
+        'WEEK': 'hsla(211, 90%, 50%, 0.5)',    // Blue
+        'MONTH': 'hsla(145, 72%, 31%, 0.5)',   // Green
+        'QUARTER': 'hsla(271, 90%, 50%, 0.5)', // Purple
+        'YEAR': 'hsla(3, 85%, 49%, 0.5)'       // Red
+    };
+    
+    return {
+        labels: orderedKeys.map(key => timeLabels[key as keyof typeof timeLabels]),
+        datasets: [{
+            data: orderedKeys.map(key => input[key] || 0),
+            backgroundColor: orderedKeys.map(key => timeColors[key as keyof typeof timeColors]),
+            barPercentage: 0.5,
+            categoryPercentage: 0.8,
+            borderRadius: 3
+        }],
+    }
+}

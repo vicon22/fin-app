@@ -14,15 +14,16 @@ import {
 } from 'chart.js';
 
 import { Pie, Bar } from 'react-chartjs-2';
-import {HorizontalLayout, VerticalLayout, TabSheet, TabSheetTab} from '@vaadin/react-components';
+import {HorizontalLayout, VerticalLayout, TabSheet, TabSheetTab, RadioGroup, RadioButton} from '@vaadin/react-components';
 import ProjectController from 'Frontend/controllers/ProjectController';
 import { formatAmount } from 'Frontend/util/currency';
 import { TransactionList } from 'Frontend/components/TransactionList/TransactionList';
 import st from './project.module.css';
 import TransactionType from 'Frontend/generated/io/scrooge/data/transaction/TransactionType';
 import { useParams } from 'react-router';
+import { useState } from 'react';
 import { TransactionFilterController } from 'Frontend/controllers/TransactionFilterController';
-import { getSummaryByCategoryChartData, getSummaryByStateChartData, getSummaryByTypeChartData } from './utils';
+import { getSummaryByCategoryChartData, getSummaryByStateChartData, getSummaryByTypeChartData, getSummaryByTimeChartData } from './utils';
 import ProjectSummaryController from 'Frontend/controllers/ProjectSummaryController';
 import BanksController from 'Frontend/controllers/BanksController';
 import { getSummaryByBankChartData } from './utils';
@@ -176,20 +177,19 @@ export default function ProjectOverview() {
                                                             {({data: banksData, pending: banksPending}) => (
                                                                 <div style={{ width: '100%', height: 400, marginTop: 80, boxSizing: 'border-box' }}>
                                                                     <h4 style={{lineHeight: 3}}>Распределение по банкам</h4>
-                                                                    {!banksPending && summary.data.byBank && Object.keys(summary.data.byBank).length > 0 && (
+                                                                    {(summary.data.byBank && Object.keys(summary.data.byBank).length > 0) && (
                                                                         <Bar
                                                                             options={{
-                                                                                responsive: true,
-                                                                                maintainAspectRatio: false,
-                                                                                plugins: {
+                                                                            responsive: true,
+                                                                            maintainAspectRatio: false,
+                                                                            plugins: {
                                                                                     legend: {
-                                                                                        display: true,
-                                                                                        position: 'top',
+                                                                                        position: 'top' as const,
                                                                                     },
                                                                                     title: {
                                                                                         display: false,
                                                                                     },
-                                                                                },
+                                                                            },
                                                                             }}
                                                                             data={getSummaryByBankChartData(summary.data.byBank, banksData.banks)}
                                                                         />
@@ -200,6 +200,46 @@ export default function ProjectOverview() {
                                                                 </div>
                                                             )}
                                                         </BanksController>
+
+                                                        <div style={{ width: '100%', height: 400, marginTop: 80, boxSizing: 'border-box' }}>
+                                                            <h4 style={{lineHeight: 3}}>Количество транзакций по периодам</h4>
+                                                            {(summary.data.byTime && Object.keys(summary.data.byTime).length > 0) && (
+                                                                <Bar
+                                                                    options={{
+                                                                    responsive: true,
+                                                                    maintainAspectRatio: false,
+                                                                    plugins: {
+                                                                            legend: {
+                                                                                display: false,
+                                                                            },
+                                                                            title: {
+                                                                                display: false,
+                                                                            },
+                                                                    },
+                                                                    scales: {
+                                                                        x: {
+                                                                            grid: {
+                                                                                display: false
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    }}
+                                                                    data={getSummaryByTimeChartData(summary.data.byTime)}
+                                                                />
+                                                            )}
+                                                            {(!summary.data.byTime || Object.keys(summary.data.byTime).length === 0) && (
+                                                                <p>Данные по периодам времени недоступны. Обновите страницу после перезапуска сервера.</p>
+                                                            )}
+                                                        </div>
+                                                        
+                                                        <div style={{ width: '100%', height: 450, marginTop: 80, boxSizing: 'border-box' }}>
+                                                            <h4 style={{lineHeight: 3}}>Количество транзакций по типам и периодам</h4>
+                                                            <div>
+                                                                <TransactionTypeSelector 
+                                                                    summary={summary} 
+                                                                />
+                                                            </div>
+                                                        </div>
                                                     </VerticalLayout>
                                                 )}
                                             </ProjectSummaryController>
@@ -212,5 +252,70 @@ export default function ProjectOverview() {
                 )
             }}
         </TransactionFilterController>
+    );
+}
+
+function TransactionTypeSelector({summary}: {summary: any}) {
+    const [selectedType, setSelectedType] = useState<'income' | 'expense'>('income');
+    
+    const handleTypeChange = (e: CustomEvent) => {
+        setSelectedType(e.detail.value);
+    };
+    
+    // Get the data based on the selected type
+    const getData = () => {
+        if (selectedType === 'income') {
+            return summary.data.byTimeIncome;
+        } else {
+            return summary.data.byTimeExpense;
+        }
+    };
+    
+    const data = getData();
+    const hasData = data && Object.keys(data).length > 0;
+    
+    return (
+        <div>
+            <RadioGroup 
+                label="Тип транзакций"
+                value={selectedType}
+                onValueChanged={handleTypeChange as any}
+                theme="horizontal"
+            >
+                <RadioButton value="income" label="Доходы" />
+                <RadioButton value="expense" label="Расходы" />
+            </RadioGroup>
+            
+            {hasData && (
+                <div style={{ width: '100%', height: 350, marginTop: 20 }}>
+                    <Bar
+                        options={{
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false,
+                                },
+                                title: {
+                                    display: false,
+                                },
+                            },
+                            scales: {
+                                x: {
+                                    grid: {
+                                        display: false
+                                    }
+                                }
+                            }
+                        }}
+                        data={getSummaryByTimeChartData(data)}
+                    />
+                </div>
+            )}
+            
+            {!hasData && (
+                <p>Данные по выбранному типу транзакций недоступны. Обновите страницу после перезапуска сервера.</p>
+            )}
+        </div>
     );
 }
