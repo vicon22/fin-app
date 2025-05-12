@@ -8,8 +8,6 @@ COPY package-lock.json package-lock.json
 COPY mvnw pom.xml ./
 COPY src ./src
 
-RUN ./mvnw clean package -P production
 
 EXPOSE 8080
-
 CMD ["./mvnw", "spring-boot:run"]
